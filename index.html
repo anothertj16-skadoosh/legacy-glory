@@ -682,7 +682,7 @@
 
     <!-- Footer -->
     <footer class="hidden md:block text-center py-3 text-xs text-gray-600 border-t border-slate-900 glass-panel">
-        LEGACY GLORY v1.8 — Build Your Legacy. Claim Your Glory. | Offline Football Manager
+        LEGACY GLORY v2.0 — Build Your Legacy. Claim Your Glory. | Offline Football Manager
     </footer>
 
     <!-- STARTER PACK SELECTION MODAL -->
@@ -1228,68 +1228,124 @@
         (function assignLooks() {
             const used = new Set();
             PLAYER_DATABASE.forEach(p => {
-                for (let salt = 0; salt < 50; salt++) {
+                for (let salt = 0; salt < 400; salt++) {
                     let h = hashStr(p.id + '|look|' + salt); const r = n => { const v = h % n; h = Math.floor(h / n) ^ (Math.imul(h, 2654435761) >>> 7); h >>>= 0; return v; };
-                    const L = { hs: r(10), hc: r(CH_HAIRC.length), sk: r(CH_SKIN.length), ey: r(5), mo: r(4), kit: r(CH_KIT.length), pat: r(3), gk: r(CH_GK.length), bt: r(CH_BOOT.length), band: r(CH_BAND.length), num: r(3), mir: r(2) };
-                    const key = [L.hs, L.hc, L.sk, L.ey, L.mo, p.category === 'standard' ? L.kit : p.category, L.pat].join('.');
-                    if (!used.has(key) || salt === 49) { used.add(key); p.look = L; break; }
+                    const L = { hs: r(7), hc: r(CH_HAIRC.length), sk: r(CH_SKIN.length), ey: r(5), mo: r(4), bd: r(5) % 4, kit: r(CH_KIT.length), pat: r(3), gk: r(CH_GK.length), bt: r(CH_BOOT.length), band: r(CH_BAND.length), num: r(3), mir: r(2) };
+                    const key = [L.hs, L.hc, L.sk].join('.');   // hair style + hair colour + skin never repeat, so every face is clearly different
+                    if (!used.has(key) || salt === 399) { used.add(key); p.look = L; break; }
                 }
             });
         })();
+        // real shirt numbers: World XI = national team, Retro / UCL = club number in that card's season
+        const REAL_NUM = { xi_1: 10, xi_2: 7, xi_3: 10, xi_4: 4, xi_5: 3, xi_6: 1, xi_7: 10, xi_8: 10, xi_9: 19, xi_10: 5, xi_11: 1, xi_12: 2, xi_13: 6,
+            ret_1: 9, ret_2: 7, ret_3: 22, ret_4: 8, ret_5: 15, ret_6: 1, ret_7: 14, ret_8: 6, ret_9: 8, ret_10: 11, ret_11: 8, ret_12: 1, ret_13: 26, ret_14: 21, ret_15: 21, ret_16: 7,
+            ucl_1: 7, ucl_2: 9, ucl_3: 17, ucl_4: 5, ucl_5: 4, ucl_6: 7, ucl_7: 3, ucl_8: 16, ucl_9: 1, ucl_10: 20 };
+        // World XI portrait: dark silhouette with a rim light in the national colour, glowing eyes and the real shirt number (no facial detail)
+        const SIL_TORSO = 'M4 120 L8 102 Q12 90 34 85 L43 80 L57 80 L66 85 Q88 90 92 102 L96 120Z', SIL_FACE = 'M33 44 Q33 63 42 72 L50 77 L58 72 Q67 63 67 44 Q67 22 50 22 Q33 22 33 44Z';
+        const SIL_HAIR = ['M30 46 L28 30 L36 34 L34 18 L44 26 L48 10 L54 24 L62 12 L64 28 L72 22 L70 46 Q66 30 50 30 Q36 30 30 46Z', 'M31 44 Q28 20 52 16 Q72 16 72 36 L70 46 Q66 28 56 30 Q60 24 50 24 Q40 26 36 34 Q33 38 31 44Z',
+            'M33 40 Q33 21 50 21 Q67 21 67 40 Q60 30 50 30 Q40 30 33 40Z', 'M30 50 Q26 18 50 17 Q74 18 70 50 L72 70 Q68 74 66 66 L66 40 Q58 28 50 30 Q42 28 34 40 L34 66 Q32 74 28 70Z'];
+        function silhouette(t, cls) {
+            const L = t.look || { hs: 0 }, k = kitOf(t) || ['#facc15', '#1e3a8a'], lm = h => { const v = parseInt(h.slice(1), 16); return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) / 255; };
+            const c = lm(k[0]) < 0.17 ? k[1] : k[0], hair = SIL_HAIR[L.hs % 4], dk = '#070b16', num = REAL_NUM[t.id] || '';
+            const body = `${L.hs % 4 === 3 ? `<path d="${hair}"/>` : ''}<path d="${SIL_TORSO}"/><path d="M43 62 L57 62 L58 84 L42 84Z"/><path d="${SIL_FACE}"/><circle cx="33" cy="48" r="4"/><circle cx="67" cy="48" r="4"/>${L.hs % 4 !== 3 ? `<path d="${hair}"/>` : ''}`;
+            return `<svg viewBox="0 0 100 120" class="${cls || ''}" xmlns="http://www.w3.org/2000/svg">${[46, 36, 26, 16].map((r, i) => `<circle cx="50" cy="52" r="${r}" fill="${c}" opacity="${0.07 + i * 0.05}"/>`).join('')}
+                <g fill="none" stroke="${c}" stroke-linejoin="round" transform="translate(1.6,-1.2)"><g stroke-width="7" opacity=".18">${body}</g><g stroke-width="3.5" opacity=".45">${body}</g><g stroke-width="1.4">${body}</g></g>
+                <g fill="${dk}">${body}</g><path d="M38 50 L46 51.5 M62 50 L54 51.5" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/><path d="M38 50 L46 51.5 M62 50 L54 51.5" stroke="${c}" stroke-width="4.5" stroke-linecap="round" opacity=".25"/>
+                <text x="50" y="113" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="22" fill="none" stroke="${c}" stroke-width="1.4">${num}</text><text x="50" y="7.5" text-anchor="middle" font-size="8">👑</text></svg>`;
+        }
+        // ===================== PLAYER PORTRAITS: a different art style per card class =====================
+        // Standard = Anime · Retro = Low-Poly vintage · UCL = Esports Mascot · World XI = Silhouette Hero (all original faces, never modelled on a real person)
+        const BT_TORSO = 'M4 120 L8 102 Q12 90 34 85 L43 80 L57 80 L66 85 Q88 90 92 102 L96 120Z';
+        const BT_FACE = 'M33 44 Q33 63 42 72 L50 77 L58 72 Q67 63 67 44 Q67 22 50 22 Q33 22 33 44Z';
+        const BT_IRIS = ['#1e293b', '#3f2a1d', '#1d4ed8', '#047857', '#6b4423'];
+        const bShade = (h, a) => { const v = parseInt(h.slice(1), 16), f = x => Math.max(0, Math.min(255, Math.round(a < 0 ? x * (1 + a) : x + (255 - x) * a))); return '#' + [v >> 16, (v >> 8) & 255, v & 255].map(x => f(x).toString(16).padStart(2, '0')).join(''); };
+        const bLum = h => { const v = parseInt(h.slice(1), 16); return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) / 255; };
+        // hair: [back layer, front layer]
+        function bHair(hs, col, st) {
+            const P = (d, f) => `<path d="${d}" fill="${f || col}" ${st || ''}/>`;
+            switch (hs % 7) {
+                case 0: return ['', P('M30 46 L28 30 L36 34 L34 18 L44 26 L48 10 L54 24 L62 12 L64 28 L72 22 L70 46 Q66 30 50 30 Q36 30 30 46Z')];
+                case 1: return ['', P('M31 44 Q28 20 52 16 Q72 16 72 36 L70 46 Q66 28 56 30 Q60 24 50 24 Q40 26 36 34 Q33 38 31 44Z')];
+                case 2: return ['', P('M33 40 Q33 21 50 21 Q67 21 67 40 Q60 30 50 30 Q40 30 33 40Z')];
+                case 3: return [P('M30 50 Q26 18 50 17 Q74 18 70 50 L72 70 Q68 74 66 66 L66 40 Q58 28 50 30 Q42 28 34 40 L34 66 Q32 74 28 70Z', bShade(col, -.25)), P('M32 42 Q32 20 50 19 Q68 20 68 42 Q60 29 50 29 Q40 29 32 42Z')];
+                case 4: return ['', [[34, 38, 9], [39, 27, 10], [50, 22, 11], [61, 27, 10], [66, 38, 9], [50, 31, 9]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${col}" ${st || ''}/>`).join('') + `<path d="M36 40 Q50 30 64 40 Q50 36 36 40Z" fill="${col}"/>`];
+                case 5: return ['', P('M34 40 Q34 26 44 23 L56 23 Q66 26 66 40 Q58 32 50 32 Q42 32 34 40Z', bShade(col, -.35)) + P('M44 36 L45 12 L50 5 L55 12 L56 36 Q50 31 44 36Z')];
+                default: return ['', `<circle cx="50" cy="15" r="7" fill="${col}" ${st || ''}/>` + P('M33 40 Q33 21 50 21 Q67 21 67 40 Q60 29 50 29 Q40 29 33 40Z')];
+            }
+        }
+        function bBeard(bd, col) {
+            return ['', `<path d="M38 60 Q42 73 50 77 Q58 73 62 60 Q58 69 50 71 Q42 69 38 60Z" fill="${col}" opacity=".28"/>`,
+                `<path d="M44.5 62.5 Q50 60.5 55.5 62.5 Q50 64 44.5 62.5Z M45.5 69 Q50 77 54.5 69 Q50 71.5 45.5 69Z" fill="${col}"/>`,
+                `<path d="M34 52 Q36 72 50 79 Q64 72 66 52 L62 56 Q60 68 50 70.5 Q40 68 38 56Z" fill="${col}"/><path d="M44 62.5 Q50 60 56 62.5 Q50 64.5 44 62.5Z" fill="${col}"/>`][bd % 4];
+        }
+        function bTorso(kit, num, stripe, o) {
+            const st = o && o.outline ? `stroke="#0b0b14" stroke-width="3" stroke-linejoin="round"` : '';
+            let s = `<path d="${BT_TORSO}" fill="${kit[0]}" ${st}/>`;
+            if (stripe) s += [18, 34, 50, 66, 82].map(x => `<rect x="${x - 4.5}" y="${x < 30 || x > 70 ? 96 : 88}" width="9" height="${x < 30 || x > 70 ? 22 : 30}" fill="${kit[1]}"/>`).join('');
+            s += `<path d="M62 84 L66 85 Q88 90 92 102 L96 120 L64 120Z" fill="#000" opacity="${o && o.shade || .22}"/>`;
+            s += `<path d="M42 81 L50 92 L58 81" fill="none" stroke="${o && o.outline ? '#0b0b14' : kit[1] === kit[0] ? '#fff' : kit[1]}" stroke-width="3"/>`;
+            const nc = bLum(kit[0]) > 0.6 ? (bLum(kit[1]) < 0.6 ? kit[1] : '#111827') : '#fff';
+            return s + `<text x="72" y="111" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="${o && o.outline ? 15 : 13}" fill="${nc}" ${o && o.outline ? 'stroke="#0b0b14" stroke-width="1.1"' : ''}>${num}</text>`;
+        }
+        // ---- Standard: anime ----
+        function bustAnime(L, kit, num, stripe, cls) {
+            const sk = CH_SKIN[L.sk], sd = bShade(sk, -.18), hair = CH_HAIRC[L.hc], hd = bShade(hair, -.35), iris = BT_IRIS[L.ey % 5], [hb, hf] = bHair(L.hs, hair);
+            const ey = L.ey % 5, eyeH = ey === 1 ? 1.6 : ey === 2 ? 3.4 : 2.6, brow = ey === 3 ? 4.5 : ey === 4 ? 1 : 3;
+            const eye = (x, d) => `<path d="M${x - d * 6} 49 Q${x - d * 1} ${49 - eyeH} ${x + d * 4} ${48.5} L${x + d * 3.6} 51.5 Q${x - d * 1} ${50.5 + eyeH * .45} ${x - d * 5.4} 51Z" fill="#fff"/><circle cx="${x - d * .5}" cy="49.8" r="${Math.min(2.4, eyeH)}" fill="${iris}"/><circle cx="${x - d * .5}" cy="49.8" r="${Math.min(1.1, eyeH * .5)}" fill="#0b0b14"/><circle cx="${x + .3}" cy="48.9" r=".7" fill="#fff"/><path d="M${x - d * 6.5} 48.6 Q${x - d * 1} ${48 - eyeH * 1.2} ${x + d * 4.5} 48" fill="none" stroke="#111" stroke-width="1.5"/>`;
+            const mouth = [`<path d="M45 66 Q50 67.5 56 65" fill="none" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round"/>`, `<path d="M44 65 Q50 70 56 65 Z" fill="#7f1d1d"/><path d="M45 65.4 L55 65.4" stroke="#fff" stroke-width="1.3"/>`, `<path d="M46 66 L54 66" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round"/>`, `<path d="M45.5 64.5 Q50 63.5 54.5 64.5 Q53.5 70 50 70 Q46.5 70 45.5 64.5Z" fill="#7f1d1d"/>`][L.mo % 4];
+            const lines = Array.from({ length: 12 }, (_, i) => { const a = i / 12 * 6.283 + L.hs * .2; return `<line x1="50" y1="48" x2="${50 + Math.cos(a) * 90}" y2="${48 + Math.sin(a) * 90}" stroke="${kit[0]}" stroke-width="5" opacity=".13"/>`; }).join('');
+            return `<svg viewBox="0 0 100 120" class="${cls || ''}" xmlns="http://www.w3.org/2000/svg">${lines}${hb}${bTorso(kit, num, stripe)}<path d="M43 64 L57 64 L58 84 Q50 90 42 84Z" fill="${sd}"/>
+                <circle cx="33" cy="48" r="4" fill="${sk}"/><circle cx="67" cy="48" r="4" fill="${sd}"/><path d="${BT_FACE}" fill="${sk}"/>
+                <path d="M50 22 Q67 22 67 44 Q67 63 58 72 L51 76.5 Q59 60 58 44 Q57 31 50 22Z" fill="${sd}" opacity=".6"/>
+                <path d="M35 ${42 - brow * .3} L46 ${43 + brow * .4}" stroke="${hd}" stroke-width="2.6" stroke-linecap="round"/><path d="M65 ${42 - brow * .3} L54 ${43 + brow * .4}" stroke="${hd}" stroke-width="2.6" stroke-linecap="round"/>
+                ${eye(42.5, 1)}${eye(57.5, -1)}<path d="M50.5 53 L49 60 L51.5 60.5" fill="none" stroke="${bShade(sk, -.35)}" stroke-width="1"/>${mouth}${bBeard(L.bd, hd)}${hf}
+                <path d="M44 24 L50 33 L52 24" fill="${bShade(hair, .35)}" opacity=".45"/></svg>`;
+        }
+        // ---- UCL: esports mascot ----
+        function bustMascot(L, kit, num, stripe, cls) {
+            const sk = CH_SKIN[L.sk], sd = bShade(sk, -.25), O = '#0b0b14', hair = CH_HAIRC[L.hc], acc = ['#38bdf8', '#f472b6', '#facc15', '#a3e635', '#f87171'][L.ey % 5];
+            const st = `stroke="${O}" stroke-width="3" stroke-linejoin="round"`, [hb, hf] = bHair(L.hs, hair, st);
+            const stars = [[14, 18], [86, 22], [20, 70], [82, 64], [70, 10], [28, 8]].map(([x, y], i) => `<path d="M${x} ${y - 3} L${x + .9} ${y - .9} L${x + 3} ${y} L${x + .9} ${y + .9} L${x} ${y + 3} L${x - .9} ${y + .9} L${x - 3} ${y} L${x - .9} ${y - .9}Z" fill="#c7d2fe" opacity="${.35 + (i % 3) * .2}"/>`).join('');
+            const mouth = [`<path d="M42 66 Q50 71 58 66 L56 69 Q50 72 44 69Z" fill="${O}"/><path d="M45 67.5 L55 67.5" stroke="#fff" stroke-width="1.4"/>`, `<path d="M43 66 L57 66" stroke="${O}" stroke-width="2.4" stroke-linecap="round"/>`, `<path d="M44 65 Q50 63 56 65 Q55 72 50 72 Q45 72 44 65Z" fill="${O}"/><path d="M45.5 66 L54.5 66" stroke="#fff" stroke-width="1.6"/>`, `<path d="M44 67 Q50 69 57 64" fill="none" stroke="${O}" stroke-width="2.4" stroke-linecap="round"/>`][L.mo % 4];
+            return `<svg viewBox="0 0 100 120" class="${cls || ''}" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="54" r="44" fill="#1e1b4b" opacity=".7"/><circle cx="50" cy="54" r="44" fill="none" stroke="${acc}" stroke-width="1.5" opacity=".5"/>${stars}
+                ${hb}${bTorso(kit, num, stripe, { outline: 1, shade: .25 })}<path d="M42 62 L58 62 L60 84 Q50 92 40 84Z" fill="${sd}" ${st}/>
+                <circle cx="31" cy="48" r="4.5" fill="${sk}" ${st}/><circle cx="69" cy="48" r="4.5" fill="${sd}" ${st}/>
+                <path d="M31 42 Q31 64 40 73 L50 79 L60 73 Q69 64 69 42 Q69 21 50 21 Q31 21 31 42Z" fill="${sk}" ${st}/>
+                <path d="M50 22.5 Q67.5 22.5 67.5 42 Q67.5 62 59 72 L52 77 Q61 58 58 40Z" fill="${sd}" opacity=".6"/>
+                <path d="M33 39 L47 45 L46 48 L34 44Z" fill="${O}"/><path d="M67 39 L53 45 L54 48 L66 44Z" fill="${O}"/>
+                <path d="M36 49 L46 50 L44 54 L37 53Z" fill="#fff" stroke="${O}" stroke-width="1.5"/><path d="M64 49 L54 50 L56 54 L63 53Z" fill="#fff" stroke="${O}" stroke-width="1.5"/>
+                <circle cx="42" cy="51.5" r="1.9" fill="${acc}"/><circle cx="58" cy="51.5" r="1.9" fill="${acc}"/><path d="M48 56 L50 61 L52 56" fill="none" stroke="${O}" stroke-width="1.6"/>${mouth}${bBeard(L.bd, bShade(hair, -.3))}${hf}</svg>`;
+        }
+        // ---- Retro: low-poly with a warm vintage wash ----
+        function bustPoly(L, kit, num, stripe, cls) {
+            const sk = CH_SKIN[L.sk], hair = CH_HAIRC[L.hc], [hb, hf] = bHair(L.hs, hair);
+            const F = [[33, 44], [35, 32], [42, 24.5], [50, 22], [58, 24.5], [65, 32], [67, 44], [65, 58], [58, 72], [50, 77], [42, 72], [35, 58]], C = [50 + (L.mo % 3 - 1), 50];
+            const shadeF = [.1, .14, .08, 0, -.06, -.14, -.2, -.24, -.2, -.1, -.02, .04];
+            const face = F.map((p, i) => { const q = F[(i + 1) % F.length], a = shadeF[i]; return `<polygon points="${C} ${p} ${q}" fill="${bShade(sk, a)}" stroke="${bShade(sk, a)}" stroke-width=".4"/>`; }).join('');
+            const T = [[4, 120], [8, 102], [20, 90], [34, 85], [50, 92], [66, 85], [80, 90], [92, 102], [96, 120]], TC = [50, 112];
+            const tor = T.slice(0, -1).map((p, i) => `<polygon points="${TC} ${p} ${T[i + 1]}" fill="${bShade(kit[0], [.12, .08, .04, .1, -.08, -.18, -.26, -.3][i])}" stroke="${bShade(kit[0], [.12, .08, .04, .1, -.08, -.18, -.26, -.3][i])}" stroke-width=".4"/>`).join('') + `<polygon points="4,120 96,120 ${TC}" fill="${bShade(kit[0], -.05)}"/>`;
+            const strp = stripe ? [22, 50, 78].map(x => `<polygon points="${x - 5},${x === 50 ? 92 : 94} ${x + 5},${x === 50 ? 92 : 94} ${x + 3},120 ${x - 7},120" fill="${kit[1]}" opacity=".9"/>`).join('') : '';
+            const nc = bLum(kit[0]) > 0.6 ? (bLum(kit[1]) < 0.6 ? kit[1] : '#111827') : '#fff';
+            const mouth = [`<polygon points="44,66 56,65 54,68 46,68" fill="#7f1d1d" opacity=".75"/>`, `<polygon points="45,66 55,66 50,68" fill="#7f1d1d" opacity=".8"/>`, `<polygon points="44,65 56,65 53,69.5 47,69.5" fill="#7f1d1d"/><polygon points="45.5,65.5 54.5,65.5 54,66.6 46,66.6" fill="#fff"/>`, `<polygon points="45,66.5 55,65.5 55,66.6 45,67.6" fill="#7f1d1d"/>`][L.mo % 4];
+            const ex = L.ey % 5 === 2 ? 1 : 0;
+            return `<svg viewBox="0 0 100 120" class="${cls || ''}" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 100,0 50,58" fill="#b45309" opacity=".16"/><polygon points="0,120 0,26 50,58" fill="#78350f" opacity=".22"/><polygon points="100,120 100,26 50,58" fill="#92400e" opacity=".14"/>
+                ${hb}${tor}${strp}<polygon points="42,62 58,62 58,84 50,90 42,84" fill="${bShade(sk, -.2)}"/><polygon points="40,81 50,93 60,81 56,81 50,88 44,81" fill="${kit[1] === kit[0] ? '#fff' : kit[1]}"/>
+                <text x="72" y="111" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="13" fill="${nc}">${num}</text>
+                <polygon points="29,44 33,40 35,52" fill="${bShade(sk, .05)}"/><polygon points="71,44 67,40 65,52" fill="${bShade(sk, -.25)}"/>${face}
+                <polygon points="36,${48 - ex} 46,${47 - ex} 45,51 38,51" fill="#fff"/><polygon points="64,${48 - ex} 54,${47 - ex} 55,51 62,51" fill="#fff"/><polygon points="40.5,${47.5 - ex} 44,${47.5 - ex} 44,51 40.5,51" fill="${BT_IRIS[L.ey % 5]}"/><polygon points="59.5,${47.5 - ex} 56,${47.5 - ex} 56,51 59.5,51" fill="${BT_IRIS[L.ey % 5]}"/>
+                <polygon points="35,42 46,43 46,45 36,44.5" fill="${bShade(hair, -.3)}"/><polygon points="65,42 54,43 54,45 64,44.5" fill="${bShade(hair, -.3)}"/>
+                <polygon points="50,52 48,60 52,60" fill="${bShade(sk, -.22)}"/>${mouth}${bBeard(L.bd, bShade(hair, -.2))}${hf}<polygon points="50,14 66,26 52,30" fill="#000" opacity=".18"/>
+                <rect width="100" height="120" fill="#f59e0b" opacity=".08"/></svg>`;
+        }
         const _chCache = {};
         function chibi(c, cls) {
-            const t = c.look ? c : (PLAYER_DATABASE.find(p => p.id === (c.templateId || c.id)) || c), L = t.look || { hs: 0, hc: 0, sk: 1, ey: 0, mo: 0, kit: 0, pat: 0, gk: 0, bt: 0, band: 0, num: 0, mir: 0 };
+            const t = c.look ? c : (PLAYER_DATABASE.find(p => p.id === (c.templateId || c.id)) || c), L = t.look || { hs: 0, hc: 0, sk: 1, ey: 0, mo: 0, kit: 0, pat: 0, gk: 0, bt: 0, band: 0, num: 0, mir: 0, bd: 0 };
             const key = t.id + '|' + (cls || ''); if (_chCache[key]) return _chCache[key];
-            const pos = t.pos || 'CM', P = CH_POSE[CH_POSEOF[pos] || 'CM'], gk = pos === 'GK';
-            const real = gk ? null : kitOf(t), kit = gk ? CH_GK[L.gk] : real ? [real[0], real[1]] : CH_KIT[L.kit];
-            const skin = CH_SKIN[L.sk], hair = CH_HAIRC[L.hc], boot = CH_BOOT[L.bt], band = L.hs === 9 ? (CH_BAND[L.band] || '#ef4444') : CH_BAND[L.band];
-            const mirror = pos[0] === 'L' || (pos[0] !== 'R' && L.mir);
-            const pl = pts => pts.map(q => q.join(',')).join(' ');
-            const limb = (pts, w, col) => `<polyline points="${pl(pts)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
-            const lum = h => { const v = parseInt(h.slice(1), 16); return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) / 255; };
-            const ink = '#1f2937', light = lum(kit[0]) > 0.62, numCol = light ? (lum(kit[1]) < 0.62 ? kit[1] : '#111827') : '#fff';
-            const ball = q => q ? `<g transform="translate(${q[0]},${q[1]})"><circle r="5.2" fill="#fff" stroke="${ink}" stroke-width="1"/><path d="M0,-2.2 L2.1,-0.7 L1.3,1.8 L-1.3,1.8 L-2.1,-0.7Z" fill="${ink}"/></g>` : '';
-            const leg = pts => limb(pts, 8, skin) + limb([pts[1], pts[2]], 8.5, kit[1]) + `<ellipse cx="${pts[2][0] + 2}" cy="${pts[2][1] + 2}" rx="6" ry="3.6" fill="${boot}" stroke="${ink}" stroke-width=".8"/>`;
-            const arm = pts => limb(pts, 7, skin) + limb([pts[0], [(pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2]], 9, kit[0]) + (P.gloves ? `<circle cx="${pts[2][0]}" cy="${pts[2][1]}" r="5.5" fill="#f8fafc" stroke="${kit[1]}" stroke-width="1.5"/>` : P.fist && pts === P.A2 ? `<circle cx="${pts[2][0]}" cy="${pts[2][1]}" r="4" fill="${skin}"/>` : '');
-            let stripes = '';
-            if (real ? real[2] : (L.pat === 1 && !gk)) stripes = [41, 50, 59].map(x => `<rect x="${x - 2.5}" y="57" width="5" height="27" fill="${kit[1]}" opacity="${real ? .95 : .55}"/>`).join('');
-            if (!real && L.pat === 2 && !gk) stripes = `<path d="M37 60 L46 56 L64 80 L64 84 L58 84 Z" fill="${kit[1]}" opacity=".55"/>`;
-            if (t.category === 'worldxi') stripes += `<path d="M44 56 L50 63 L56 56" fill="none" stroke="#facc15" stroke-width="2.5"/>`;
-            // hair pieces (back = behind the head)
-            const HB = { 7: `<path d="M25 34 Q25 9 50 9 Q75 9 75 34 L77 60 Q71 65 66 58 L66 36 Q50 27 34 36 L34 58 Q29 65 23 60Z" fill="${hair}"/>`, 8: `<circle cx="50" cy="31" r="29" fill="${hair}"/>` };
-            const HF = [
-                `<path d="M27 34 Q28 12 50 12 Q72 12 73 34 Q66 22 50 22 Q34 22 27 34Z" fill="${hair}"/>`,
-                `<path d="M27 32 L29 15 L37 22 L41 7 L50 17 L57 6 L62 19 L71 12 L73 32 Q62 22 50 22 Q38 22 27 32Z" fill="${hair}"/>`,
-                [[31, 27], [37, 18], [47, 13], [57, 13], [66, 18], [71, 27]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="8" fill="${hair}"/>`).join(''),
-                `<path d="M28 31 Q30 14 50 14 Q70 14 72 31 Q62 24 50 24 Q38 24 28 31Z" fill="${hair}" opacity=".9"/>`,
-                `<path d="M27 34 Q28 13 50 13 Q72 13 73 34 Q66 23 50 23 Q34 23 27 34Z" fill="${hair}"/><circle cx="50" cy="9" r="7" fill="${hair}"/>`,
-                `<path d="M30 30 Q31 18 40 16 L40 24 Q34 26 30 30Z M70 30 Q69 18 60 16 L60 24 Q66 26 70 30Z" fill="${hair}" opacity=".7"/><path d="M44 23 Q45 3 50 3 Q55 3 56 23Z" fill="${hair}"/>`,
-                `<path d="M27 36 Q25 13 50 12 Q75 12 73 31 Q60 18 41 26 Q32 30 27 36Z" fill="${hair}"/>`,
-                `<path d="M28 33 Q29 13 50 13 Q71 13 72 33 Q66 21 56 20 L54 27 L48 20 Q36 21 28 33Z" fill="${hair}"/>`,
-                `<path d="M27 30 Q30 14 50 14 Q70 14 73 30 Q62 22 50 22 Q38 22 27 30Z" fill="${hair}"/>`,
-                ''][L.hs];
-            const eye = (x, k) => {
-                if (k === 1 || (L.ey === 4 && x > 50)) return `<path d="M${x - 4} 39 Q${x} 34 ${x + 4} 39" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`;
-                const r = k === 2 ? 4.2 : 3.2;
-                return `<ellipse cx="${x}" cy="38" rx="${r * .85}" ry="${r}" fill="${ink}"/><circle cx="${x + 1.1}" cy="${36.6}" r="${k === 2 ? 1.6 : 1.1}" fill="#fff"/>${k === 2 ? `<circle cx="${x - 1.2}" cy="39.6" r=".8" fill="#fff"/>` : ''}`;
-            };
-            const brows = L.ey === 3 ? `<path d="M36 31 L45 33 M64 31 L55 33" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>` : `<path d="M37 31 Q41 29 45 31 M55 31 Q59 29 63 31" fill="none" stroke="${hair}" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>`;
-            const mouth = [`<path d="M44 46 Q50 52 56 46" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`, `<path d="M43 45.5 Q50 56 57 45.5Z" fill="#9f1239"/><path d="M45 46.2 L55 46.2" stroke="#fff" stroke-width="1.6"/>`, `<ellipse cx="50" cy="48" rx="2.6" ry="3" fill="#9f1239"/>`, `<path d="M45 48.5 Q52 51 56 45.5" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`][L.mo];
-            const num = (CH_NUM[pos] || [8])[L.num % (CH_NUM[pos] || [8]).length];
-            const limbs = `${leg(P.L1)}${leg(P.L2)}${P.crossed ? '' : arm(P.A1)}`;
-            const svg = `<svg viewBox="0 0 100 120" class="${cls || ''}" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="114" rx="26" ry="4" fill="rgba(0,0,0,.28)"/>
-                <g ${mirror ? 'transform="translate(100,0) scale(-1,1)"' : ''}>${limbs}${!mirror ? ball(P.ball) : ''}</g>${mirror ? `<g transform="translate(100,0) scale(-1,1)">${ball(P.ball)}</g>` : ''}
-                <path d="M36 83 L64 83 L63 94 L52 94 L50 90 L48 94 L37 94Z" fill="${kit[1]}"/>
-                <path d="M36 61 Q36 56 43 56 L57 56 Q64 56 64 61 L65 85 L35 85Z" fill="${kit[0]}" stroke="rgba(0,0,0,.25)" stroke-width=".8"/>${stripes}
-                <path d="M45 56 L50 61 L55 56" fill="none" stroke="${kit[1]}" stroke-width="2"/>
-                <text x="50" y="79" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="11" fill="${numCol}" stroke="${light ? 'none' : 'rgba(0,0,0,.35)'}" stroke-width=".6">${num}</text>
-                ${P.crossed ? `<circle cx="37.5" cy="64" r="5" fill="${kit[0]}"/><circle cx="62.5" cy="64" r="5" fill="${kit[0]}"/>${limb([[36, 66], [44, 72], [61, 72]], 7, skin)}${limb([[64, 66], [56, 75], [39, 75]], 7, skin)}` : `<g ${mirror ? 'transform="translate(100,0) scale(-1,1)"' : ''}>${arm(P.A2)}</g>`}
-                <rect x="45.5" y="50" width="9" height="8" rx="3" fill="${skin}"/>
-                ${HB[L.hs] || ''}<circle cx="27" cy="39" r="4" fill="${skin}"/><circle cx="73" cy="39" r="4" fill="${skin}"/><circle cx="50" cy="35" r="23" fill="${skin}"/>
-                ${HF}${band ? `<path d="M27.5 27 Q50 17 72.5 27 L72 32 Q50 22 28 32Z" fill="${band}"/>` : ''}
-                ${brows}${eye(41, L.ey === 4 ? 0 : L.ey)}${eye(59, L.ey)}<ellipse cx="34" cy="45" rx="4" ry="2.4" fill="#fb7185" opacity=".45"/><ellipse cx="66" cy="45" rx="4" ry="2.4" fill="#fb7185" opacity=".45"/>${mouth}
-                ${t.category === 'worldxi' ? '<text x="50" y="7" text-anchor="middle" font-size="9">👑</text>' : ''}</svg>`;
-            return (_chCache[key] = svg);
+            if (t.category === 'worldxi') return (_chCache[key] = silhouette(t, cls));
+            const pos = t.pos || 'CM', gk = pos === 'GK', real = gk ? null : kitOf(t), kit = gk ? CH_GK[L.gk] : real ? [real[0], real[1]] : CH_KIT[L.kit];
+            const stripe = real ? real[2] : (!gk && L.pat === 1), num = REAL_NUM[t.id] || (CH_NUM[pos] || [8])[L.num % (CH_NUM[pos] || [8]).length];
+            const f = t.category === 'retro' ? bustPoly : t.category === 'ucl' ? bustMascot : bustAnime;
+            return (_chCache[key] = f(L, kit, num, stripe, cls));
         }
 
         // ===================== CLUB CRESTS (emoji + real-life club colours) =====================
@@ -2651,8 +2707,8 @@
                 [650, () => { glow(af[0]); stage(`<div class="pfx-big pfx-pop text-4xl md:text-5xl" style="--g:${af[0]};color:${af[0]}">${af[2]} ${af[1]}</div><div class="text-xs text-gray-300 pfx-fadeup">คลาสของตำนานที่กำลังมา...</div>`); playSound('click'); }],
                 [700, () => { stage(`<div class="pfx-pop" style="font-size:110px;line-height:1">${nat[0]}</div><div class="pfx-big text-2xl text-white pfx-fadeup" style="--g:${af[0]}">${nat[1]}</div>`); crowdRoar('ooh'); }],
                 [650, () => { stage(`<div class="text-6xl pfx-pop">${nat[0]}</div><div class="pfx-big pfx-pop text-7xl text-white" style="--g:${af[0]}">${c.pos}</div>`); playSound('click'); }],
-                [850, () => { stage(`<div class="pfx-sil" style="--g:${af[0]}">?</div><div class="pfx-big text-3xl text-gray-500 tracking-[.4em]">?????</div>`); }],
-                [800, () => { flash('#fde68a'); playSound('legend_reveal'); stage(`<div class="pfx-sil" style="--g:${af[0]}"><span class="text-6xl">${nat[0]}</span></div><div class="pfx-big pfx-pop text-3xl md:text-4xl text-white uppercase" style="--g:#facc15">${esc(c.name)}</div><div class="pfx-big pfx-fadeup text-xl text-yellow-300 tracking-[.3em]">👑 WORLD XI</div>`); }]
+                [850, () => { stage(`<div class="pfx-sil" style="--g:${af[0]}">${silhouette({ ...c, id: c.id || c.templateId }, 'w-full h-full')}</div><div class="pfx-big text-3xl text-gray-500 tracking-[.4em]">?????</div>`); }],
+                [800, () => { flash('#fde68a'); playSound('legend_reveal'); stage(`<div class="pfx-sil" style="--g:${af[0]}">${silhouette({ ...c, id: c.id || c.templateId }, 'w-full h-full')}</div><div class="pfx-big pfx-pop text-3xl md:text-4xl text-white uppercase" style="--g:#facc15">${esc(c.name)}</div><div class="pfx-big pfx-fadeup text-xl text-yellow-300 tracking-[.3em]">👑 WORLD XI</div>`); }]
             ];
         }
         function finalSingle(type, g, items) {
