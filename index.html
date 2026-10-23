@@ -50,6 +50,15 @@
             overflow-x: hidden;
         }
 
+        /* ===== UI polish ===== */
+        .tab-content:not(.hidden) { animation: tabIn .22s ease-out; }
+        @keyframes tabIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        .log-in { animation: logIn .25s ease-out; }
+        @keyframes logIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+        details > summary::-webkit-details-marker { display: none; }
+        button:not(:disabled) { -webkit-tap-highlight-color: transparent; }
+        nav button.text-amber-400 { background: linear-gradient(180deg, rgba(251,191,36,.12), transparent); }
+        @keyframes sheetUp { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
         /* ===== mobile ===== */
         body { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         #pitch-container > div { touch-action: none; }
@@ -60,6 +69,10 @@
             .pfx-pack { transform: scale(.9); }
             #pfx-stage .grid { gap: 5px; }
             input, select, textarea { font-size: 16px !important; }   /* stops iOS zooming into form fields */
+            .sheet-wrap { align-items: flex-end !important; padding: 0 !important; }
+            .sheet-wrap > div { border-radius: 22px 22px 0 0 !important; width: 100%; max-width: none; max-height: 88vh; padding-bottom: calc(1rem + env(safe-area-inset-bottom)); animation: sheetUp .26s ease-out; }
+            .start-btn { position: sticky; display: block; width: 100%; bottom: calc(70px + env(safe-area-inset-bottom)); z-index: 35; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+            body.match-live .start-btn { display: none; }
         }
 
         /* Card Glows & Effects */
@@ -313,6 +326,7 @@
 
         <!-- SQUAD BUILDER TACTICS & FREE FORMATION -->
         <section id="sec-squad" class="tab-content block">
+            <div id="next-strip"></div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Pitch Area (Left 7 Cols) -->
                 <div class="lg:col-span-7 glass-panel p-2.5 md:p-4 rounded-2xl relative flex flex-col justify-between min-h-[560px] md:min-h-[600px] border border-blue-800/40">
@@ -401,33 +415,33 @@
 
         <!-- UPGRADE SYSTEM -->
         <section id="sec-upgrade" class="tab-content hidden">
-            <div class="max-w-4xl mx-auto glass-panel p-6 rounded-2xl border border-amber-500/30 text-center relative overflow-hidden">
-                <h2 class="text-2xl font-black text-amber-400 mb-1 tracking-wide">ระบบตีบวกนักเตะ (PLAYER UPGRADE)</h2>
-                <p class="text-xs text-gray-400 mb-6">ใช้การ์ดใบเดียวกันในการตีบวก +1 ถึง +10 (เพิ่มสเตตัสและการ์ดเรืองแสง)</p>
+            <div class="max-w-4xl mx-auto glass-panel p-3 md:p-6 rounded-2xl border border-amber-500/30 text-center relative overflow-hidden">
+                <h2 class="text-xl md:text-2xl font-black text-amber-400 mb-1 tracking-wide">ตีบวกนักเตะ <span class="hidden md:inline">(PLAYER UPGRADE)</span></h2>
+                <p class="text-[11px] md:text-xs text-gray-400 mb-3 md:mb-6">ใช้การ์ดใบเดียวกันตีบวก +1 ถึง +10</p>
 
-                <div class="flex flex-col md:flex-row items-center justify-center gap-6 my-8">
+                <div id="upg-stage" class="flex flex-row items-center justify-center gap-3 md:gap-6 my-3 md:my-8">
                     <!-- Main Card Slot -->
                     <div class="flex flex-col items-center">
-                        <span class="text-xs font-semibold text-amber-400 mb-2">การ์ดหลัก (MAIN CARD)</span>
-                        <div id="upgrade-slot-main" onclick="openSelectUpgradeModal('main')" class="w-36 h-52 rounded-xl border-2 border-dashed border-amber-400/50 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer hover:border-amber-400 transition shadow-lg relative group">
+                        <span class="text-[11px] md:text-xs font-semibold text-amber-400 mb-1 md:mb-2">การ์ดหลัก</span>
+                        <div id="upgrade-slot-main" onclick="openSelectUpgradeModal('main')" class="w-32 h-48 md:w-36 md:h-52 rounded-xl border-2 border-dashed border-amber-400/50 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer hover:border-amber-400 transition shadow-lg relative group">
                             <i class="fa-solid fa-plus text-2xl text-amber-400/60 group-hover:scale-125 transition"></i>
                             <span class="text-xs text-gray-400 mt-2">คลิกเพื่อเลือกการ์ด</span>
                         </div>
                     </div>
 
-                    <div class="text-2xl font-extrabold text-amber-400/80 my-2 md:my-0">+</div>
+                    <div class="text-2xl font-extrabold text-amber-400/80">+</div>
 
                     <!-- Material Card Slot -->
                     <div class="flex flex-col items-center">
-                        <span class="text-xs font-semibold text-blue-400 mb-2">วัตถุดิบ (MATERIAL CARD)</span>
-                        <div id="upgrade-slot-material" onclick="openSelectUpgradeModal('material')" class="w-36 h-52 rounded-xl border-2 border-dashed border-blue-400/50 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition shadow-lg relative group">
+                        <span class="text-[11px] md:text-xs font-semibold text-blue-400 mb-1 md:mb-2">วัตถุดิบ</span>
+                        <div id="upgrade-slot-material" onclick="openSelectUpgradeModal('material')" class="w-32 h-48 md:w-36 md:h-52 rounded-xl border-2 border-dashed border-blue-400/50 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition shadow-lg relative group">
                             <i class="fa-solid fa-plus text-2xl text-blue-400/60 group-hover:scale-125 transition"></i>
                             <span class="text-xs text-gray-400 mt-2">คลิกเพื่อเลือกวัตถุดิบ</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 max-w-md mx-auto p-3 rounded-xl border border-slate-700 mb-6 flex justify-around text-sm">
+                <div class="bg-slate-900/80 max-w-md mx-auto p-2 md:p-3 rounded-xl border border-slate-700 mb-3 md:mb-6 flex justify-around text-sm">
                     <div>
                         <span class="text-xs text-gray-400 block">โอกาสสำเร็จ</span>
                         <span id="upgrade-success-rate" class="font-bold text-emerald-400 text-lg">-%</span>
@@ -445,7 +459,7 @@
                     <label class="flex items-center gap-2 bg-slate-900/70 border border-slate-700 rounded-lg px-3 py-1.5 cursor-pointer"><input type="checkbox" id="use-boost" onchange="updateUpgradeInfo()"> <span>✨ ใช้ตัวเพิ่มโอกาส (+10%) · มี <b id="item-boost-up" class="text-amber-300">0</b></span></label>
                 </div>
 
-                <button id="btn-start-upgrade" onclick="processUpgrade()" disabled class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-black text-lg px-10 py-3 rounded-xl shadow-xl transition transform active:scale-95">
+                <button id="btn-start-upgrade" onclick="processUpgrade()" disabled class="w-full md:w-auto bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-black text-lg px-10 py-3 rounded-xl shadow-xl transition transform active:scale-95">
                     เริ่มตีบวกนักเตะ!
                 </button>
             </div>
@@ -467,7 +481,7 @@
                 <div id="starter-panel"></div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="glass-panel p-4 rounded-2xl border border-emerald-500/40 flex flex-col justify-between items-center text-center hover:border-emerald-400 transition shadow-xl">
-                        <div class="pfx-pack pfx-pack-standard my-2" style="transform:scale(.72)"><i class="fa-solid fa-box text-4xl"></i><span>STANDARD</span></div>
+                        <div class="hidden md:flex pfx-pack pfx-pack-standard my-2" style="transform:scale(.72)"><i class="fa-solid fa-box text-4xl"></i><span>STANDARD</span></div>
                         <div class="my-1">
                             <h3 class="font-bold text-emerald-300 text-base">📦 Standard Pack</h3>
                             <div class="text-[11px] text-gray-300 mt-1 space-y-0.5"><div>Standard <b class="text-emerald-300">94%</b></div><div>Premium (Retro/UCL) <b class="text-purple-300">5.5%</b></div><div>World XI <b class="text-yellow-300">0.5%</b></div></div>
@@ -477,7 +491,7 @@
                         <button onclick="buyPack('standard',10)" class="w-full mt-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-700/50 font-bold py-1.5 rounded-xl text-[11px] transition">เปิด ×10 · 2,850,000 EP (ลด 5%)</button>
                     </div>
                     <div class="glass-panel p-4 rounded-2xl border border-purple-500/40 flex flex-col justify-between items-center text-center hover:border-purple-400 transition shadow-xl">
-                        <div class="pfx-pack pfx-pack-premium my-2" style="transform:scale(.72)"><i class="fa-solid fa-gem text-4xl"></i><span>PREMIUM</span></div>
+                        <div class="hidden md:flex pfx-pack pfx-pack-premium my-2" style="transform:scale(.72)"><i class="fa-solid fa-gem text-4xl"></i><span>PREMIUM</span></div>
                         <div class="my-1">
                             <h3 class="font-bold text-purple-300 text-base">💎 Premium Pack</h3>
                             <div class="text-[11px] text-gray-300 mt-1 space-y-0.5"><div>Premium (Retro/UCL) <b class="text-purple-300">95%</b></div><div>World XI <b class="text-yellow-300">5%</b></div></div>
@@ -487,7 +501,7 @@
                         <button onclick="buyPack('premium',10)" class="w-full mt-1.5 bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-700/50 font-bold py-1.5 rounded-xl text-[11px] transition">เปิด ×10 · 950 ทอง (ลด 5%)</button>
                     </div>
                     <div class="glass-panel p-4 rounded-2xl border border-yellow-400/60 flex flex-col justify-between items-center text-center hover:border-yellow-400 transition shadow-xl">
-                        <div class="pfx-pack pfx-pack-worldxi my-2" style="transform:scale(.72)"><i class="fa-solid fa-crown text-4xl"></i><span>WORLD XI</span></div>
+                        <div class="hidden md:flex pfx-pack pfx-pack-worldxi my-2" style="transform:scale(.72)"><i class="fa-solid fa-crown text-4xl"></i><span>WORLD XI</span></div>
                         <div class="my-1">
                             <h3 class="font-bold text-yellow-300 text-base">👑 World XI Pack</h3>
                             <div class="text-[11px] text-gray-300 mt-1"><div>World XI <b class="text-yellow-300">100%</b></div></div>
@@ -536,11 +550,11 @@
         <section id="sec-match" class="tab-content hidden">
             <div class="max-w-4xl mx-auto glass-panel p-3 md:p-6 rounded-2xl border border-slate-800 text-center">
                 <h2 class="text-xl md:text-2xl font-black text-amber-400 mb-1">จำลองการแข่งขัน <span class="hidden md:inline">(MATCH SIMULATOR)</span></h2>
-                <p class="hidden md:block text-xs text-gray-400 mb-4">ถ่ายทอดสดจำลองการเคลื่อนที่สมจริง ปรบตำแหน่ง เพิ่มประสบการณ์ความชำนาญนักเตะ</p>
-
-                <div class="flex justify-center items-center gap-3 mb-3 text-xs"><span class="text-gray-400">โหมด:</span><select id="match-mode" onchange="syncMatchMode()" class="bg-slate-800 text-white rounded-lg p-1.5 border border-slate-600"><option value="league">ลีกฤดูกาล</option><option value="friendly">กระชับมิตร (เลือกคู่แข่ง)</option><option value="cup">🏆 ถ้วยในประเทศ</option><option value="euro">🌍 ถ้วยยุโรป</option></select><span id="league-quota" class="text-amber-300 font-bold"></span></div>
+                <p class="hidden md:block text-xs text-gray-400 mb-3">โปรแกรมแข่งจริง · รายงานแมวมอง · สั่งการระหว่างเกม · พักครึ่งพูดกับนักเตะ</p>
+                <select id="match-mode" class="hidden"><option value="league">ลีก</option><option value="friendly">กระชับมิตร</option><option value="cup">ถ้วย</option><option value="euro">ยุโรป</option></select><span id="league-quota" class="hidden"></span>
+                <div id="fixture-card" class="mb-3 text-left"></div>
                 <details id="match-settings" open class="mb-3 bg-slate-900/40 md:bg-transparent rounded-xl md:rounded-none border border-slate-800 md:border-0 px-2 md:px-0">
-                <summary class="md:hidden cursor-pointer text-xs text-sky-200 font-bold py-2 list-none">⚙️ ตั้งค่าการแข่ง (ความเร็ว · การหยุด · สไตล์ · เสียง) ▾</summary>
+                <summary class="md:hidden cursor-pointer text-xs text-sky-200 font-bold py-2 list-none">⚙️ ตั้งค่า (ความเร็ว · ไฮไลต์ · การหยุด · สไตล์) ▾</summary>
                 <!-- Match Speed Settings -->
                 <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 mb-3 md:mb-4 text-xs">
                     <span class="text-gray-400">ความเร็วในการแข่งขัน:</span>
@@ -553,8 +567,12 @@
                         <span class="ml-1 text-gray-300">เร็ว (3x)</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="matchSpeed" value="hl" class="form-radio text-amber-400">
+                        <span class="ml-1 text-gray-300">🎬 ไฮไลต์</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="matchSpeed" value="30" class="form-radio text-amber-400">
-                        <span class="ml-1 text-gray-300">ข้ามทันที (Instant)</span>
+                        <span class="ml-1 text-gray-300">ข้ามทันที</span>
                     </label>
                 </div>
 
@@ -597,7 +615,8 @@
                         <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-900/80 border-2 border-red-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg mb-2">
                             <span id="ai-crest"></span>
                         </div>
-                        <select id="ai-opponent-select" onchange="updateAIOpponentOVR()" class="bg-slate-900 text-white font-bold text-xs md:text-sm rounded-lg p-1 md:p-1.5 border border-slate-700 focus:outline-none w-full md:w-auto">
+                        <h3 id="ai-name-label" class="font-bold text-xs md:text-lg text-white truncate max-w-full"></h3>
+                        <select id="ai-opponent-select" onchange="updateAIOpponentOVR();syncMatchMode()" class="bg-slate-900 text-white font-bold text-xs md:text-sm rounded-lg p-1 md:p-1.5 border border-slate-700 focus:outline-none w-full md:w-auto">
                             <option value="Real Madrid">Real Madrid (OVR 88)</option>
                             <option value="Barcelona">Barcelona (OVR 87)</option>
                             <option value="Manchester United">Man United (OVR 85)</option>
@@ -612,19 +631,21 @@
                 <div id="team-dims" class="text-[11px] text-gray-300 mb-2"></div>
                 <div id="day-tip" class="text-[11px] text-gray-400 mb-2"></div>
                 <!-- 2D High-Performance Radar Field Canvas -->
-                <div class="relative w-full max-w-2xl mx-auto bg-emerald-950 rounded-xl border border-emerald-600/50 mb-4 overflow-hidden" style="aspect-ratio:640/300">
+                <div class="relative w-full max-w-2xl mx-auto bg-emerald-950 rounded-xl border border-emerald-600/50 mb-2 overflow-hidden shadow-2xl shadow-emerald-950/60" style="aspect-ratio:640/300">
                     <canvas id="match-canvas" width="640" height="300" class="w-full h-full block"></canvas>
                     <div class="absolute bottom-1 right-2 text-[10px] text-emerald-400/80 font-mono">LEGACY GLORY MATCH ENGINE</div>
                 </div>
 
+                <!-- live orders -->
+                <div id="order-bar" class="grid grid-cols-5 gap-1.5 max-w-2xl mx-auto"></div>
+                <div id="order-desc" class="text-[10px] md:text-[11px] text-gray-400 mt-1 mb-3 min-h-[1rem]"></div>
                 <!-- Match Live Commentary Log -->
-                <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 text-left h-36 overflow-y-auto font-mono text-xs text-gray-300 space-y-1 mb-4" id="match-log">
-                    <p class="text-gray-500">// เลือกทีมคู่แข่งแล้วกด "เริ่มจำลองการแข่ง"...</p>
+                <div class="bg-slate-900/90 rounded-xl p-3 md:p-4 border border-slate-800 text-left h-36 md:h-40 overflow-y-auto font-mono text-[11px] md:text-xs text-gray-300 space-y-1 mb-4" id="match-log">
+                    <p class="text-gray-500">// กด "เริ่มนัด" เพื่อเตะนัดถัดไปในโปรแกรม...</p>
                 </div>
-
-                <!-- Start Match Button -->
-                <button id="btn-start-match" onclick="startMatchSimulation()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-lg px-10 py-3 rounded-xl shadow-xl transition transform active:scale-95">
-                    <i class="fa-solid fa-play mr-2"></i> เริ่มจำลองการแข่ง!
+                <!-- Start Match Button (sticks above the tab bar on phones) -->
+                <button id="btn-start-match" onclick="startMatchSimulation()" class="start-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:opacity-50 text-slate-950 font-black text-base md:text-lg px-6 md:px-10 py-3 rounded-xl shadow-xl transition transform active:scale-95">
+                    <i class="fa-solid fa-play mr-2"></i> เริ่มแข่ง
                 </button>
             </div>
         </section>
@@ -634,8 +655,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass-panel p-4 rounded-2xl border border-slate-800">
                     <h2 class="text-xl font-bold text-amber-400 mb-1"><i class="fa-solid fa-ranking-star mr-2"></i>ลีกฤดูกาล <span id="season-no"></span></h2>
-                    <div id="season-next" class="text-xs text-gray-300 mb-3"></div>
-                    <button onclick="playNextLeague()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl">ไปแข่งนัดถัดไป</button>
+                    <div id="season-next" class="text-xs text-gray-300 mb-2"></div>
+                    <details class="mb-2" open><summary class="text-xs font-bold text-emerald-300 cursor-pointer select-none mb-1">📅 โปรแกรมแข่งฤดูกาลนี้ ▾</summary><div id="schedule-panel"></div></details>
                     <div id="season-table" class="mt-3 text-xs overflow-x-auto"></div>
                 </div>
                 <div class="glass-panel p-4 rounded-2xl border border-slate-800">
@@ -682,7 +703,7 @@
 
     <!-- Footer -->
     <footer class="hidden md:block text-center py-3 text-xs text-gray-600 border-t border-slate-900 glass-panel">
-        LEGACY GLORY v2.0 — Build Your Legacy. Claim Your Glory. | Offline Football Manager
+        LEGACY GLORY v2.1 — Build Your Legacy. Claim Your Glory. | Offline Football Manager
     </footer>
 
     <!-- STARTER PACK SELECTION MODAL -->
@@ -712,7 +733,7 @@
         </div>
     </div>
 
-    <div id="modal-summary" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[58] hidden flex items-center justify-center p-4">
+    <div id="modal-summary" class="sheet-wrap fixed inset-0 bg-black/90 backdrop-blur-sm z-[58] hidden flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl border border-amber-500/40 p-5 max-h-[90vh] overflow-y-auto">
             <h2 id="summary-title" class="text-2xl font-black text-amber-400 text-center mb-3">สรุปฤดูกาล</h2>
             <div id="summary-body" class="text-xs text-gray-300 space-y-3"></div>
@@ -720,13 +741,19 @@
         </div>
     </div>
 
+    <!-- MATCH RESULT -->
+    <div id="modal-result" class="sheet-wrap fixed inset-0 bg-black/85 backdrop-blur-sm z-[57] hidden flex items-center justify-center p-3" onclick="if (event.target === this) closeResult()">
+        <div id="result-body" class="glass-panel w-full max-w-lg rounded-2xl border border-amber-500/40 p-4 max-h-[90vh] overflow-y-auto"></div>
+    </div>
+
     <!-- MATCH PAUSE MODAL (30/60/75) -->
-    <div id="modal-pause" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+    <div id="modal-pause" class="sheet-wrap fixed inset-0 bg-black/85 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-lg rounded-2xl border border-amber-500/40 p-4 max-h-[88vh] overflow-y-auto">
             <div class="text-center mb-3">
                 <h3 id="pause-title" class="text-xl font-black text-amber-400"></h3>
                 <p id="pause-sub" class="text-xs text-gray-300"></p>
             </div>
+            <div id="pause-talk"></div>
             <div class="text-xs text-amber-300 font-bold mb-1">สไตล์การเล่น</div>
             <div id="pause-styles" class="grid grid-cols-2 gap-2 mb-3"></div>
             <div class="flex justify-between items-center mb-1"><span class="text-xs text-amber-300 font-bold">เปลี่ยนตัว</span><span id="pause-subcount" class="text-[10px] text-gray-400"></span></div>
@@ -762,7 +789,7 @@
     </div>
 
     <!-- Player Detail Modal -->
-    <div id="modal-player" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-[62] hidden flex items-center justify-center p-3" onclick="if (event.target === this) closePlayer()">
+    <div id="modal-player" class="sheet-wrap fixed inset-0 bg-black/85 backdrop-blur-sm z-[62] hidden flex items-center justify-center p-3" onclick="if (event.target === this) closePlayer()">
         <div class="glass-panel w-full max-w-lg rounded-2xl border border-amber-500/40 p-4 max-h-[92vh] overflow-y-auto relative">
             <button onclick="closePlayer()" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div id="player-body"></div>
@@ -1703,6 +1730,8 @@
             const targetTab = document.getElementById(`tab-${tabName}`);
 
             if (targetSec) targetSec.classList.remove('hidden');
+            document.body.className = document.body.className.replace(/\btab-\w+/g, '').trim() + ' tab-' + tabName;
+            if (tabName === 'match') { syncMatchMode(); if (!M && !radarAnimFrame) { radar = null; drawRadarCanvas(); } }
             if (targetTab) {
                 targetTab.classList.remove('border-transparent');
                 targetTab.classList.add('border-amber-400', 'text-amber-400');
@@ -1736,7 +1765,7 @@
             gameState.fac = Object.assign({ medical:0, training:0, fitness:0 }, gameState.fac || {}); delete gameState.fac.academy; if (gameState._v6note) { const n = gameState._v6note; delete gameState._v6note; setTimeout(() => toast('ℹ️ ' + n), 600); }
             if (!Array.isArray(gameState.presets) || gameState.presets.length !== 3) gameState.presets = [null, null, null];
             if (!Array.isArray(gameState.hist)) gameState.hist = [];
-            if (!(gameState.day >= 1)) gameState.day = 1; if (!Array.isArray(gameState.owned)) gameState.owned = [...new Set(gameState.inventory.map(i => i.templateId))]; if (!(gameState.xiShard >= 0)) gameState.xiShard = 0; if (!gameState.crest || !gameState.crest.e) gameState.crest = { e: '⚽', c1: '#1D4ED8', c2: '#FFFFFF' }; if (gameState.hasClaimedStarter && !gameState.starterPack) gameState.starterPack = 'opened'; if (!Array.isArray(gameState.mdays)) gameState.mdays = [];
+            if (!(gameState.day >= 1)) gameState.day = 1; if (!Array.isArray(gameState.owned)) gameState.owned = [...new Set(gameState.inventory.map(i => i.templateId))]; if (!(gameState.xiShard >= 0)) gameState.xiShard = 0; if (!gameState.crest || !gameState.crest.e) gameState.crest = { e: '⚽', c1: '#1D4ED8', c2: '#FFFFFF' }; if (gameState.hasClaimedStarter && !gameState.starterPack) gameState.starterPack = 'opened'; if (!Array.isArray(gameState.mdays)) gameState.mdays = []; if (gameState.cal && !Array.isArray(gameState.cal.list)) gameState.cal = null;
             gameState.stats = Object.assign({ promos: 0 }, gameState.stats || {});
             if (!['all', '60', 'inj', 'none'].includes(gameState.pauseMode)) gameState.pauseMode = 'all';
             if (typeof gameState.crowd !== 'boolean') gameState.crowd = true;
@@ -1808,7 +1837,10 @@
         }
         function renderDay() {
             const el = $('day-label'); if (el) el.innerText = `วันที่ ${gameState.day || 1}`;
-            const tip = $('day-tip'); if (tip) { const nx = restPlan(($('match-mode') || {}).value || 'league'); tip.innerHTML = `📅 วันที่ <b class="text-amber-300">${gameState.day || 1}</b> · หลังนัดนี้พัก ${nx[0]} วัน (${nx[1]}) ฟื้น +${Math.round(nx[0] * recPerDay())} · ตัวจริงใช้พลัง ~${DRAIN.out}`; }
+            const tip = $('day-tip'); if (!tip) return;
+            if (M ? !M.fix : matchKind === 'friendly') { tip.innerHTML = `📅 วันที่ <b class="text-amber-300">${gameState.day || 1}</b> · กระชับมิตรไม่ทำให้วันผ่าน (ไม่ได้พักฟื้น) · ตัวจริงใช้พลัง ~${DRAIN.out}`; return; }
+            const nf = M ? M.fix : nextFixture(), nx = nf ? fixtureAfter(nf) : null, gap = nx ? nx.d - nf.d : 0;
+            tip.innerHTML = `📅 วันที่ <b class="text-amber-300">${gameState.day || 1}</b>${nx ? ` · หลังนัดนี้พัก ${gap} วัน ฟื้น +${Math.round(gap * recPerDay())}${gap <= 3 ? ' <b class="text-orange-300">(โปรแกรมถี่)</b>' : ''}` : ''} · ตัวจริงใช้พลัง ~${DRAIN.out}`;
         }
         const FAC_MAX = 5, FAC_MULT = [1, 2, 4, 8, 16];
         const facLv = k => (gameState.fac && gameState.fac[k]) || 0;
@@ -1961,7 +1993,7 @@
             const upgradeLevel = Math.max(1, Math.min(MAX_UPG, item.upgradeLevel || 1));
             const valueMultiplier = Math.pow(1.6, upgradeLevel - 1);
 
-            let rawOvr = upgradedOvr(tpl.baseOvr, upgradeLevel, tpl.category !== 'standard') + levelBonus(tpl, Math.min(item.lvl || 1, maxLvl(tpl)), item);
+            let rawOvr = upgradedOvr(tpl.baseOvr, upgradeLevel, tpl.category !== 'standard') + levelBonus(tpl, Math.min(item.lvl || 1, maxLvl(tpl)), item) + formOf(item);
             const stats = deriveStats(tpl, rawOvr);
             const energy = item.energy === undefined ? 100 : item.energy;
             rawOvr -= Math.floor((100 - energy) / (tpl.trait && tpl.trait.fx.vet ? 40 : 20));   // Veteran: loses OVR half as fast when tired
@@ -1991,7 +2023,7 @@
                 stats, energy, ...playerRatings(stats, rawOvr, tpl), lvl: Math.min(item.lvl || 1, maxLvl(tpl)), maxLvl: maxLvl(tpl), xp: item.xp || 0,
                 currentOvr: Math.min(ovrCap(tpl), rawOvr),
                 currentValue: Math.round(tpl.baseValue * valueMultiplier),
-                trait, traitEff: te.eff, traitKind: te.kind, mastery: slotRole && te.kind !== 'nat' && learnedPos.includes(slotRole) ? masteryLv(item, slotRole) : 0
+                form: formOf(item), formAvg: formAvg(item), trait, traitEff: te.eff, traitKind: te.kind, mastery: slotRole && te.kind !== 'nat' && learnedPos.includes(slotRole) ? masteryLv(item, slotRole) : 0
             };
         }
 
@@ -2014,6 +2046,7 @@
             renderClub();
             renderEvolution();
             renderStarterPanel();
+            renderNextStrip(); renderSchedule(); renderOrders();
             $('team-crest').innerHTML = crestSvg(gameState.crest, 18); $('my-crest').innerHTML = crestSvg(gameState.crest, 40);
             renderDay();
             renderPresets();
@@ -2475,7 +2508,7 @@
         function renderUpgradeSlot(type, card) {
             const slot = document.getElementById(`upgrade-slot-${type}`);
             if (card) {
-                slot.className = `w-36 h-52 rounded-xl ${card.cardClass} flex flex-col items-center justify-between p-3 cursor-pointer shadow-xl relative border-2 border-amber-400 ${lvGlow(card.upgradeLevel)}`;
+                slot.className = `w-32 h-48 md:w-36 md:h-52 rounded-xl ${card.cardClass} flex flex-col items-center justify-between p-3 cursor-pointer shadow-xl relative border-2 border-amber-400 ${lvGlow(card.upgradeLevel)}`;
                 slot.innerHTML = `
                     <div class="flex justify-between w-full text-xs font-bold">
                         <span class="text-amber-300">${card.pos}</span>
@@ -2490,7 +2523,7 @@
             } else {
                 const borderCol = type === 'main' ? 'border-amber-400/50 hover:border-amber-400' : 'border-blue-400/50 hover:border-blue-400';
                 const iconCol = type === 'main' ? 'text-amber-400/60' : 'text-blue-400/60';
-                slot.className = `w-36 h-52 rounded-xl border-2 border-dashed ${borderCol} bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer transition shadow-lg relative group`;
+                slot.className = `w-32 h-48 md:w-36 md:h-52 rounded-xl border-2 border-dashed ${borderCol} bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer transition shadow-lg relative group`;
                 slot.innerHTML = `
                     <i class="fa-solid fa-plus text-2xl ${iconCol} group-hover:scale-125 transition"></i>
                     <span class="text-xs text-gray-400 mt-2">${type === 'main' ? 'คลิกเพื่อเลือกการ์ด' : 'คลิกเพื่อเลือกวัตถุดิบ'}</span>
@@ -2559,6 +2592,7 @@
             saveGame(); renderAll();
             upgBusy = true; $('btn-start-upgrade').disabled = true;
             const sm = $('upgrade-slot-main'), mt = $('upgrade-slot-material');
+            $('upg-stage').scrollIntoView({ behavior: 'smooth', block: 'center' });   // keep the effect on screen (phones)
             sm.style.setProperty('--fx', ok ? '#fbbf24' : '#ef4444'); sm.classList.add('upg-charge'); mt.classList.add('upg-consume'); playSound('click');
             setTimeout(() => {
                 upgBusy = false; playSound(ok ? 'success' : 'fail'); upgFx(ok);
@@ -3012,6 +3046,8 @@
         // ---- event engine: build-up -> creator -> receiver -> shot -> save -> goal (one step = 5 minutes) ----
         function matchStep(my, ai) {
             const c = ctxNow(), trail = M.my < M.ai, fx = sideFx(my, c, trail), ad = ai.dna || {}, log = $('match-log');
+            Object.entries((ORDERS[M.order] || {}).fx || {}).forEach(([k, v]) => { fx[k] = (fx[k] || 0) + v; });
+            if (M.talkFx) fx.all = (fx.all || 0) + M.talkFx;
             const mi = matchupInfo(gameState.style, M.aiStyle), mv = mi.v > 0 ? MATCHUP_WIN : mi.v < 0 ? MATCHUP_LOSE : 0;
             const mom = clampN(M.mom || 0, -100, 100) / 100, rl = () => clampN((Math.random() + Math.random() + Math.random() - 1.5) / 0.75, -1, 1), apen = 1 - 0.05 * (M.aiReds || 0);
             const LK = { a: 'att', m: 'mid', d: 'def', g: 'gk' };
@@ -3030,6 +3066,8 @@
             let pCreate = sk(lane(att, 'a'), lane(dfn, 'd'));
             if (mine) pCreate *= (1 + (fx.create || 0) + (fx.link || 0) * 0.6 + (pPoss < 0.5 ? (fx.counter || 0) : 0)) * (1 - press * 0.5);
             else pCreate *= (1 - (fx.oppCreate || 0) - (pPoss > 0.5 ? (fx.oppCounter || 0) : 0)) * (1 + (pPoss > 0.5 ? (ad.counter || 0) : 0));
+            const lead = mine ? M.my - M.ai : M.ai - M.my;
+            if (lead >= 3) pCreate *= Math.pow(0.72, lead - 2);   // a team far ahead eases off (fewer 0-8 blowouts)
             if (Math.random() > Math.min(0.9, pCreate)) return null;
             // 3) creator -> receiver (shooter)
             const real = my.by.FW.concat(my.by.MF, my.by.DF).filter(x => !x.blank);
@@ -3039,29 +3077,33 @@
                 shooter = pickWeighted(real.filter(x => x !== creator), x => ({ FW: 6, MF: 2.5, DF: 0.5 }[x.group] || 1) * Math.pow(x.atk, 2) * (x.sw || 1) * (1 + (traitFx(x, c).touch || 0)));
             } else if (mine && real.length === 1) shooter = real[0];
             const big = Math.random() < clampN(0.25 * (1 + (fx.big || 0) + (creator ? (traitFx(creator, c).bigC || 0) : 0) + mom * 0.3 + (creator ? (creator.cre - 75) / 150 : 0)), 0.05, 0.6);
+            if (creator) rate(creator, .12);
+            const aiShot = mine ? null : aiScorer(M.aiName);
             const say = (t, cls) => logMatchEvent(log, `[${M.minute}'] ${t}`, cls || 'text-gray-400');
             if (mine) { if (creator && shooter) { say(`${creator.name} ครองบอลกลางสนาม`); say(big ? `แทงทะลุช่องให้ ${shooter.name}!` : `จ่ายให้ ${shooter.name} ในเขตโทษ`, big ? 'text-yellow-300' : 'text-gray-400'); } }
             else say(big ? `${M.aiName} ได้โอกาสชัดเจน!` : `${M.aiName} เปิดเกมบุก`, big ? 'text-yellow-300' : 'text-gray-500');
             // 4) shot -> on target? -> save / goal
-            const own = shooter ? traitFx(shooter, c) : {}, sho = mine ? (shooter ? shooter.stats.SHO : 70) : lane('ai', 'a') * 0.98, name = mine ? (shooter ? shooter.name : 'ทีมเรา') : M.aiName;
+            const own = shooter ? traitFx(shooter, c) : {}, sho = mine ? (shooter ? shooter.stats.SHO : 70) : lane('ai', 'a') * 0.98, name = mine ? (shooter ? shooter.name : 'ทีมเรา') : (aiShot ? `${aiShot} (${M.aiName})` : M.aiName);
             const menAdj = ((my.men * (1 + (fx.men || 0)) - (ai.men || 75)) / 100) * (mine ? 1 : -1), big_ctx = c.late || c.ko || c.final;
             const pOn = clampN((big ? 0.75 : 0.50) * (1 + (sho - 75) * 0.004 + (mine ? (own.onT || 0) : -(fx.block || 0) * 0.6)) * (1 + menAdj * (big_ctx ? 0.5 : 0.15)), 0.15, 0.92);
             let pGoal = (big ? 0.65 : 0.47) * 2 * sk(lane(att, 'a'), lane(dfn, 'g'));
             if (mine) pGoal *= 1 + (own.finish || 0) + (big ? (own.finishBig || 0) : (own.finishLong || 0));
             else { pGoal = 1 - (1 - pGoal) * (1 + (fx.superSave || 0)); pGoal *= 1 - (fx.concede || 0); }
             pGoal = clampN(pGoal, 0.05, 0.92);
+            const S = M.st[att]; S.sh++; S.xg += pOn * pGoal;
             if (Math.random() > pOn) {
+                if (mine && big) rate(shooter, -.15);
                 if (Math.random() < 0.15) { say(`${name} ยิงชนเสา!`, 'text-orange-200'); addMom(att, 8); } else say(`${name} ยิงไปเฉียดข้างเสา`, 'text-gray-500');
                 return null;
             }
-            addMom(att, 5);
+            addMom(att, 5); S.ont++; if (mine) rate(shooter, .1);
             if (Math.random() >= pGoal) {
                 addMom(dfn, 5);
-                if (!mine) M.saves = (M.saves || 0) + 1;
+                if (!mine) { M.saves = (M.saves || 0) + 1; rate(my.by.GK, .3); }
                 logMatchEvent(log, `🧤 [${M.minute}'] ${name} ยิงตรงกรอบ — ${mine ? 'ผู้รักษาประตูคู่แข่ง' : my.by.GK.name} เซฟไว้ได้!`, mine ? 'text-orange-300' : 'text-emerald-300');
                 return null;
             }
-            if (!mine) return { mine };
+            if (!mine) return { mine, aiScorer: aiShot };
             const assister = creator && Math.random() < 0.6 * (1 + (traitFx(creator, c).assist || 0)) ? creator : null;
             return { mine, scorer: shooter, assister };
         }
@@ -3080,7 +3122,7 @@
             if (gameState.season) return;
             const names = [...leagueNames()].sort((a, b) => AI_TEAMS[a] - AI_TEAMS[b]);
             const table = {}; [ME, ...names].forEach(t => table[t] = { w:0, d:0, l:0, gf:0, ga:0, pts:0 });
-            gameState.season = { round: 0, fixtures: names, table };
+            gameState.season = { round: 0, fixtures: names, table }; gameState.cal = null;
         }
         const sortTable = t => Object.entries(t).sort((a, b) => b[1].pts - a[1].pts || (b[1].gf - b[1].ga) - (a[1].gf - a[1].ga) || b[1].gf - a[1].gf);
         function recordResult(sn, a, b, ga, gb) {
@@ -3144,19 +3186,171 @@
             }
             return t;
         }
+        // ===================== FIXTURE CALENDAR: league at weekends, cup / Europe midweek =====================
+        // 3 congested weeks per season (Europe Wed -> league Sat -> cup Tue = 3 matches in 7 days) make rotation matter
+        const CUP_AFTER = [2, 5, 8], EURO_AFTER = [1, 4, 7, 9], HOME_ADV = 0.03;
+        const COMP_ICON = { league: '⚽', cup: '🏆', euro: '🌍', friendly: '🤝' };
+        function buildCalendar() {
+            const sn = gameState.season; if (!sn) return null;
+            const D0 = (gameState.day || 1) - 7 * sn.round, h0 = Math.random() < 0.5 ? 0 : 1, list = [];
+            sn.fixtures.forEach((opp, i) => list.push({ d: D0 + 7 * i, comp: 'league', r: i, opp, home: (i + h0) % 2 === 0, done: i < sn.round }));
+            [['cup', CUP_AFTER, 3], ['euro', EURO_AFTER, 4]].forEach(([k, after, off]) => {
+                const t = compState(k); if (!t) return;
+                const last = COMP[k].rounds.length - 1;
+                after.slice(0, COMP[k].rounds.length).forEach((md, r) => list.push({ d: D0 + 7 * md + off, comp: k, r, opp: t.opps[r], home: r === last ? null : Math.random() < 0.5, done: r < t.round }));
+            });
+            list.sort((a, b) => a.d - b.d);
+            const open = list.find(f => !f.done);   // older saves: never schedule a match in the past
+            if (open && open.d < gameState.day) { const sh = gameState.day - open.d; list.forEach(f => { if (!f.done) f.d += sh; }); }
+            return (gameState.cal = { sn: gameState.seasonNo, list });
+        }
+        function calendar() { startSeasonIfNeeded(); return gameState.cal && gameState.cal.sn === gameState.seasonNo && Array.isArray(gameState.cal.list) ? gameState.cal : buildCalendar(); }
+        // a knock-out date only counts while the club is still in that competition
+        function fixAlive(f) { if (f.done) return false; if (f.comp === 'league') return true; const t = compState(f.comp); return !!t && t.alive && !t.done && t.round === f.r; }
+        function fixGone(f) { if (f.done || f.comp === 'league') return false; const t = compState(f.comp); return !t || !t.alive || t.done || t.round > f.r; }
+        function nextFixture() { const c = calendar(); return c ? c.list.find(fixAlive) || null : null; }
+        function fixtureAfter(f) { const c = calendar(); if (!c || !f) return null; const i = c.list.indexOf(f); return c.list.slice(i + 1).find(x => !x.done && !fixGone(x)) || null; }
+        const haTxt = h => h === true ? '🏠 เหย้า' : h === false ? '✈️ เยือน' : '🏟️ สนามกลาง';
+        const compLabel = f => f.comp === 'league' ? `${(LEAGUES[gameState.league] || LEAGUES.eng).n} · นัดที่ ${f.r + 1}/${(gameState.season || { fixtures: [] }).fixtures.length}` : f.comp === 'friendly' ? 'กระชับมิตร' : `${COMP[f.comp].name} · ${COMP[f.comp].rounds[f.r]}`;
+        let matchKind = 'fixture';
+        function setMatchKind(k) { if (M) return; matchKind = k; playSound('click'); syncMatchMode(); }
+        function goNextMatch() { matchKind = 'fixture'; switchTab('match'); syncMatchMode(); }
+
+        // ===================== SCOUTING =====================
+        let _stars = null, scoutOpen = typeof window !== 'undefined' && window.innerWidth >= 768;
+        function starsOf(n) {
+            if (!_stars) { _stars = {}; PLAYER_DATABASE.forEach(p => { const c = p.category === 'standard' ? PLAYER_CLUB[p.name] : null; if (c) (_stars[c] = _stars[c] || []).push(p); }); Object.values(_stars).forEach(a => a.sort((x, y) => y.baseOvr - x.baseOvr)); }
+            return _stars[n] || [];
+        }
+        function aiScorer(n) {
+            const s = starsOf(n).filter(p => p.pos !== 'GK'); if (!s.length) return null;
+            return pickWeighted(s, p => ({ FW: 4, MF: 1.6, DF: .35 }[p.group] || 1) * Math.pow(p.baseOvr / 80, 6)).name;
+        }
+        function scoutHtml(f) {
+            const n = f.opp, st = AI_STYLE[n] || 'control', S = STYLES[st], ai = aiTeam(n, st), my = myTeam(), r = Math.round;
+            const L = [['a', 'บุก'], ['m', 'คุมเกม'], ['d', 'เกมรับ'], ['g', 'ผู้รักษาประตู']];
+            const weak = L.reduce((w, l) => ai[l[0]] - my[l[0]] < ai[w[0]] - my[w[0]] ? l : w), strong = L.reduce((w, l) => ai[l[0]] - my[l[0]] > ai[w[0]] - my[w[0]] ? l : w);
+            const beat = Object.keys(STYLE_BEATS).find(k => STYLE_BEATS[k] === st), sn = gameState.season;
+            const rank = f.comp === 'league' && sn && sn.table[n] ? sortTable(sn.table).findIndex(([x]) => x === n) + 1 : null;
+            const stars = starsOf(n).slice(0, 3);
+            const bar = ([k, t]) => { const a = r(my[k]), b = r(ai[k]), mx = Math.max(a, b, 1); return `<div class="grid grid-cols-[3.2rem_1fr_1.6rem_1fr_1.6rem] items-center gap-1 text-[10px]"><span class="text-gray-400">${t}</span><div class="h-1.5 bg-slate-800 rounded flex justify-end"><div class="h-1.5 rounded bg-sky-400" style="width:${a / mx * 100}%"></div></div><b class="text-sky-300 text-right">${a}</b><div class="h-1.5 bg-slate-800 rounded"><div class="h-1.5 rounded bg-red-400" style="width:${b / mx * 100}%"></div></div><b class="text-red-300">${b}</b></div>`; };
+            const tips = [];
+            if (beat && gameState.style !== beat) tips.push(`ใช้ ${STYLES[beat].icon} ${STYLES[beat].n} ชนะทาง ${S.icon} ${S.n} <button onclick="setStyle('${beat}');renderFixtureCard()" class="ml-1 bg-emerald-600 text-white rounded px-1.5 py-0.5 text-[10px] font-bold">ใช้เลย</button>`);
+            else if (beat) tips.push(`✅ สไตล์ของคุณ (${STYLES[beat].icon} ${STYLES[beat].n}) ชนะทางคู่แข่งอยู่แล้ว`);
+            if (weak[0] === 'd' || weak[0] === 'g') tips.push(`${weak[1]}ของเขาอ่อน → ลองสั่ง ⚔️ บุกสุดตัวช่วงที่ต้องการประตู`);
+            if (strong[0] === 'a') tips.push('เกมบุกเขาแรง → ถ้านำอยู่ช่วงท้าย ใช้ 🚌 จอดรถบัส');
+            if (strong[0] === 'm') tips.push('เขาคุมกลางได้ดี → 🔥 เพรสสูงช่วยแย่งบอล แต่ระวังโดนสวน');
+            if ((dnaOf(n).late || {}).a) tips.push('ทีมนี้อันตรายช่วงนาที 75+ อย่าประมาทตอนท้ายเกม');
+            if (f.home === false) tips.push('เล่นนอกบ้าน: คู่แข่งได้เปรียบ +3%');
+            if (f.home === true) tips.push('เล่นในบ้าน: ทุกด้าน +3%');
+            return `<details class="mt-2 bg-slate-950/70 border border-slate-800 rounded-xl px-2.5 py-2 text-left" ${scoutOpen ? 'open' : ''} ontoggle="scoutOpen=this.open">
+                <summary class="text-xs font-bold text-sky-300 cursor-pointer select-none">🔍 รายงานแมวมอง ▾</summary>
+                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <div class="text-[11px] text-gray-300">แผน <b class="text-white">${AI_FORM[st]}</b> · ${S.icon} ${S.n}${rank ? ` · อันดับ ${rank}` : ''} · OVR <b class="text-red-300">${aiOvr(n)}</b></div>
+                        <div class="text-[11px] text-purple-300">DNA: ${dnaOf(n).txt}</div>
+                        <div class="flex justify-between text-[10px] text-gray-500 mt-1"><span class="text-sky-300">คุณ</span><span class="text-red-300">${esc(n)}</span></div>
+                        ${L.map(bar).join('')}
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-amber-300 font-bold mb-1">⭐ ดาวเด่น</div>
+                        <div class="flex gap-1.5 mb-2">${stars.length ? stars.map(p => `<div class="flex-1 min-w-0 bg-slate-900 rounded-lg p-1 text-center"><div class="h-10">${chibi(p, 'h-10 mx-auto')}</div><div class="text-[10px] text-white font-bold truncate">${esc(p.name)}</div><div class="text-[9px] text-gray-400">${p.pos} · ${p.baseOvr}</div></div>`).join('') : '<div class="text-[10px] text-gray-500">ไม่มีข้อมูลนักเตะ</div>'}</div>
+                        <div class="text-[11px]"><span class="text-emerald-300">จุดอ่อน: ${weak[1]}</span> · <span class="text-red-300">จุดแข็ง: ${strong[1]}</span></div>
+                        <ul class="mt-1 space-y-0.5 text-[11px] text-gray-300">${tips.map(t => `<li>💡 ${t}</li>`).join('')}</ul>
+                    </div>
+                </div></details>`;
+        }
+        function renderFixtureCard() {
+            const el = $('fixture-card'); if (!el) return;
+            const nf = M ? (M.fix || null) : nextFixture(), fr = M ? !M.fix : matchKind === 'friendly';
+            const tabs = `<div class="grid grid-cols-2 gap-1 bg-slate-900/80 rounded-xl p-1 mb-2 text-xs font-bold">${[['fixture', '📅 นัดในโปรแกรม'], ['friendly', '🤝 กระชับมิตร']].map(([k, t]) => `<button onclick="setMatchKind('${k}')" ${M ? 'disabled' : ''} class="py-1.5 rounded-lg transition ${(fr ? 'friendly' : 'fixture') === k ? 'bg-amber-400 text-slate-950' : 'text-gray-300'}">${t}</button>`).join('')}</div>`;
+            let body;
+            if (fr) body = `<div class="text-[11px] text-gray-300 px-1">เลือกคู่แข่งได้อิสระ · รางวัลน้อยกว่า · <b class="text-orange-300">วันไม่ผ่าน → นักเตะไม่ได้พักฟื้น</b></div>`;
+            else if (!nf) body = '<div class="text-xs text-gray-400 px-1">ไม่มีนัดในโปรแกรม</div>';
+            else {
+                const nx = fixtureAfter(nf), gap = nx ? nx.d - nf.d : null;
+                body = `<div class="flex items-center gap-3 px-1"><div class="shrink-0">${clubCrest(nf.opp, 40)}</div><div class="min-w-0 flex-1">
+                    <div class="text-[11px] text-amber-300 font-bold truncate">${COMP_ICON[nf.comp]} ${compLabel(nf)}</div>
+                    <div class="text-white font-black text-lg leading-tight truncate">${esc(nf.opp)}</div>
+                    <div class="text-[11px] text-gray-400">${haTxt(nf.home)} · วันที่ ${nf.d}${nx ? ` · นัดต่อไปอีก ${gap} วัน (${COMP_ICON[nx.comp]} ${esc(nx.opp)})${gap <= 3 ? ' <b class="text-orange-300">โปรแกรมถี่!</b>' : ''}` : ''}</div></div></div>` + scoutHtml(nf);
+            }
+            el.innerHTML = tabs + body;
+        }
+        function renderNextStrip() {
+            const el = $('next-strip'); if (!el) return;
+            const nf = nextFixture(); if (!nf || gameState.starterPack === 'pending') { el.innerHTML = ''; return; }
+            const xi = getActiveSlots().map(sl => gameState.inventory.find(i => i.instanceId === gameState.squad[sl.id])).filter(Boolean);
+            const en = xi.length ? Math.round(xi.reduce((a, i) => a + (i.energy ?? 100), 0) / xi.length) : 0, tired = xi.filter(i => (i.energy ?? 100) < 60).length;
+            el.innerHTML = `<div class="glass-panel rounded-2xl border border-emerald-700/40 px-3 py-2 mb-3 flex items-center gap-3">${clubCrest(nf.opp, 30)}<div class="min-w-0 flex-1"><div class="text-[10px] text-emerald-300 font-bold">📅 วันที่ ${gameState.day} · นัดถัดไป · ${COMP_ICON[nf.comp]} ${compLabel(nf)}</div><div class="text-sm text-white font-bold truncate">vs ${esc(nf.opp)} <span class="text-[11px] text-gray-400 font-normal">${haTxt(nf.home)}</span></div><div class="text-[10px] ${tired ? 'text-orange-300' : 'text-gray-400'}">พลังตัวจริงเฉลี่ย ${en}%${tired ? ` · เหนื่อย ${tired} คน — ลองหมุนเวียน` : ''}</div></div><button onclick="goNextMatch()" class="shrink-0 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3 py-2 rounded-xl">ไปแข่ง ▶</button></div>`;
+        }
+        function renderSchedule() {
+            const el = $('schedule-panel'); if (!el) return;
+            const c = calendar(); if (!c) { el.innerHTML = ''; return; }
+            const nf = nextFixture();
+            el.innerHTML = `<div class="max-h-80 overflow-y-auto pr-1 space-y-1">` + c.list.map(f => {
+                const gone = fixGone(f), isNext = f === nf, res = f.res ? `<span class="px-1.5 py-0.5 rounded font-black text-[10px] ${f.w === 'W' ? 'bg-emerald-600' : f.w === 'D' ? 'bg-slate-600' : 'bg-red-700'} text-white">${f.res}</span>` : gone ? '<span class="text-[10px] text-gray-500">ตกรอบ</span>' : isNext ? `<button onclick="goNextMatch()" class="bg-emerald-500 text-slate-950 font-black text-[10px] px-2 py-1 rounded-lg">ไปแข่ง ▶</button>` : `<span class="text-[10px] text-gray-400">อีก ${f.d - gameState.day} วัน</span>`;
+                return `<div class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] ${isNext ? 'bg-emerald-900/40 border border-emerald-600/60' : 'bg-slate-900/70 border border-slate-800'} ${gone ? 'opacity-40' : ''}"><span class="w-12 text-gray-400 shrink-0">วัน ${f.d}</span><span class="shrink-0">${COMP_ICON[f.comp]}</span>${clubCrest(f.opp, 14)}<span class="flex-1 min-w-0 truncate text-white">${esc(f.opp)} <span class="text-gray-500">${f.home === true ? 'H' : f.home === false ? 'A' : 'N'}${f.comp !== 'league' ? ' · ' + COMP[f.comp].rounds[f.r] : ''}</span></span>${res}</div>`;
+            }).join('') + '</div>';
+        }
+
+        // ===================== IN-MATCH ORDERS + HALF-TIME TEAM TALK =====================
+        const ORDERS = {
+            normal: { n: 'สมดุล', icon: '⚖️', d: 'เล่นตามแผนปกติ' },
+            allout: { n: 'บุกสุดตัว', icon: '⚔️', fx: { att: .06, def: -.08, create: .22, oppCreate: -.18 }, drain: 1.35, d: 'สร้างโอกาส +22% แต่คู่แข่งได้โอกาส +18% · เหนื่อย ×1.35' },
+            press: { n: 'เพรสสูง', icon: '🔥', fx: { mid: .05, poss: .10, oppCounter: -.15 }, drain: 1.5, d: 'ครองบอล +10% · ถ้าหลุดเพรสโดนสวน +15% · เหนื่อย ×1.5' },
+            bus: { n: 'จอดรถบัส', icon: '🚌', fx: { def: .09, att: -.10, oppCreate: .22, create: -.35, poss: -.08 }, drain: .9, d: 'คู่แข่งสร้างโอกาส −22% · เราสร้างโอกาส −35%' },
+            waste: { n: 'ถ่วงเวลา', icon: '⏳', skip: .35, card: 1.7, drain: .8, d: 'เกมเดินช้า (เหตุการณ์ −35%) เหมาะตอนนำ · เสี่ยงใบแดง ×1.7 · คู่แข่งฮึด' }
+        };
+        function setOrder(k) {
+            if (!M || M.instant || !ORDERS[k] || M.order === k) return;
+            M.order = k; playSound('click'); renderOrders();
+            writeLog($('match-log'), `📣 [${M.minute}'] คำสั่ง: ${ORDERS[k].icon} ${ORDERS[k].n}`, 'text-sky-200');
+        }
+        function renderOrders() {
+            const el = $('order-bar'); if (!el) return;
+            const on = !!M && !M.instant, cur = M ? M.order : 'normal';
+            el.innerHTML = Object.entries(ORDERS).map(([k, o]) => `<button onclick="setOrder('${k}')" ${on ? '' : 'disabled'} title="${o.d}" class="rounded-xl py-1.5 px-0.5 text-[10px] md:text-[11px] font-bold border transition active:scale-95 ${cur === k && on ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/30' : 'bg-slate-800/90 text-gray-200 border-slate-700'} disabled:opacity-40"><div class="text-base leading-none mb-0.5">${o.icon}</div>${o.n}</button>`).join('');
+            const d = $('order-desc'); if (d) d.innerHTML = on ? `<b class="text-amber-300">${ORDERS[cur].icon} ${ORDERS[cur].n}</b> — ${ORDERS[cur].d}` : '📣 คำสั่งระหว่างเกม: กดเปลี่ยนได้ทุกเมื่อตอนแข่ง (ได้อย่างเสียอย่าง)';
+        }
+        const TALKS = {
+            praise: { n: 'ชมเชย', icon: '👏', hint: 'ได้ผลดีเมื่อนำอยู่' },
+            fire: { n: 'ปลุกใจ', icon: '🔥', hint: 'ปลอดภัย ใช้ได้ทุกสถานการณ์' },
+            rant: { n: 'ด่าแรงๆ', icon: '😡', hint: 'เสี่ยง! ได้ผลแรงเมื่อตามหลัง' }
+        };
+        function teamTalk(k) {
+            if (!M || M.talked || !TALKS[k]) return;
+            const diff = M.my - M.ai, roll = Math.random(); let v, msg;
+            if (k === 'praise') { v = diff > 0 ? 14 : diff === 0 ? 5 : -12; msg = v > 5 ? 'นักเตะมั่นใจเต็มเปี่ยม' : v > 0 ? 'นักเตะพอใจ' : 'นักเตะชะล่าใจ ทั้งที่ยังตามหลัง'; }
+            else if (k === 'fire') { v = diff < 0 ? 12 : diff === 0 ? 15 : 8; msg = 'นักเตะฮึกเหิม พร้อมลุยครึ่งหลัง'; }
+            else { const good = diff < 0 ? roll < .6 : diff === 0 ? roll < .45 : roll < .2; v = good ? (diff < 0 ? 25 : 18) : -14; msg = good ? 'ได้ผล! นักเตะโกรธจนลุกเป็นไฟ' : 'ผิดจังหวะ — นักเตะเสียขวัญ'; }
+            M.talked = k; M.talkFx = clampN(v / 400, -.035, .06); addMom('my', v); updateMomBar();
+            M.talkMsg = `${TALKS[k].icon} ${TALKS[k].n}: ${msg} (Momentum ${v > 0 ? '+' : ''}${v})`;
+            writeLog($('match-log'), `🗣️ [45'] ${M.talkMsg}`, v > 0 ? 'text-emerald-300' : 'text-red-300');
+            playSound(v > 0 ? 'success' : 'fail'); renderPause();
+        }
+        // ratings bookkeeping
+        const rate = (c, v) => { if (M && c && c.instanceId) M.rt[c.instanceId] = (M.rt[c.instanceId] || 0) + v; };
+        function rateConcede() {
+            getActiveSlots().forEach(sl => { const id = gameState.squad[sl.id]; if (!id || M.down[sl.id]) return; if (sl.role === 'GK') M.rt[id] = (M.rt[id] || 0) - .35; else if (STD_GROUP[sl.role] === 'DF') M.rt[id] = (M.rt[id] || 0) - .15; });
+        }
+        const formOf = it => { const a = (it && it.rts) || []; if (a.length < 2) return 0; return clampN(Math.round((a.reduce((s, x) => s + x, 0) / a.length - 6.6) * 1.6), -2, 2); };
+        const formAvg = it => { const a = (it && it.rts) || []; return a.length ? a.reduce((s, x) => s + x, 0) / a.length : null; };
+        const rtCls = r => r >= 8 ? 'bg-emerald-500 text-slate-950' : r >= 7 ? 'bg-emerald-700 text-white' : r >= 6 ? 'bg-amber-500 text-slate-950' : 'bg-red-600 text-white';
+
         function shootoutOld() {
             let a = 0, b = 0;
             for (let i = 0; i < 5; i++) { if (Math.random() < 0.75) a++; if (Math.random() < 0.75) b++; }
             while (a === b) { if (Math.random() < 0.75) a++; if (Math.random() < 0.75) b++; }
             return { win: a > b, a, b };
         }
-        function playComp(k) { $('match-mode').value = k; syncMatchMode(); switchTab('match'); }
+        function playComp(k) { goNextMatch(); }
         function renderComps() {
             $('comp-panel').innerHTML = ['cup', 'euro'].map(k => {
                 const c = COMP[k], t = compState(k), box = 'bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs';
                 if (!t) return `<div class="${box}"><div class="font-bold text-white">${c.icon} ${c.name}</div><div class="text-gray-400 mt-1">ต้องจบลีกอันดับ 1-6 เพื่อได้สิทธิ์ลงเล่นฤดูกาลถัดไป · รางวัลสูงสุด ${c.gold[c.gold.length - 1]} ทอง</div></div>`;
                 const rows = c.rounds.map((r, i) => `<div>${i < t.round ? '✅' : i === t.round ? (t.alive ? '▶️' : '❌') : '⏳'} ${r}: <span class="text-gray-300">${t.opps[i]}</span> · <span class="text-yellow-300">+${c.gold[i]} ทอง</span></div>`).join('');
-                const right = t.done ? '<span class="text-amber-300">🏆 แชมป์แล้ว!</span>' : !t.alive ? '<span class="text-red-300">ตกรอบ — รอฤดูกาลหน้า</span>' : `<button onclick="playComp('${k}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1 rounded-lg">ลงแข่ง</button>`;
+                const cal = calendar(), e = cal && cal.list.find(f => f.comp === k && f.r === t.round && !f.done), nf = nextFixture();
+                const right = t.done ? '<span class="text-amber-300">🏆 แชมป์แล้ว!</span>' : !t.alive ? '<span class="text-red-300">ตกรอบ — รอฤดูกาลหน้า</span>' : e && e === nf ? `<button onclick="goNextMatch()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1 rounded-lg">ไปแข่ง ▶</button>` : e ? `<span class="text-gray-300">📅 วันที่ ${e.d} (อีก ${e.d - gameState.day} วัน)</span>` : '';
                 return `<div class="${box}"><div class="flex justify-between items-center"><span class="font-bold text-white">${c.icon} ${c.name}</span>${right}</div><div class="mt-2 text-gray-400 space-y-0.5">${rows}</div></div>`;
             }).join('');
         }
@@ -3184,7 +3378,7 @@
                 return `<div class="${row}"><div><div class="text-white font-bold">${a.t.replace('{n}', g)} <span class="text-gray-500 font-normal">(ระดับ ${k + 1}/${a.tiers.length})</span></div><div class="text-gray-400">${Math.min(v, g)}/${g} · <span class="text-yellow-300">+${a.gold[k]} ทอง</span></div></div><button onclick="claimAch('${a.id}')" ${ok ? '' : 'disabled'} class="px-3 py-1 rounded-lg font-bold ${ok ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-gray-500'}">รับรางวัล</button></div>`;
             }).join('');
         }
-        function playNextLeague() { document.getElementById('match-mode').value = 'league'; syncMatchMode(); switchTab('match'); }
+        function playNextLeague() { goNextMatch(); }
         function populateOpponents() {
             const sel = document.getElementById('ai-opponent-select'), cur = sel.value;
             sel.innerHTML = Object.entries(LEAGUES).sort(([a], [b]) => (b === gameState.league) - (a === gameState.league)).map(([k, L]) => `<optgroup label="${L.f} ${L.n}">${L.teams.map(n => `<option value="${n}">${n} (OVR ${aiOvr(n)})</option>`).join('')}</optgroup>`).join('');
@@ -3192,18 +3386,16 @@
             syncMatchMode();
         }
         function syncMatchMode() {
-            const modeEl = $('match-mode');
-            
-            const league = modeEl.value === 'league';
-            const sel = $('ai-opponent-select');
-            if (league) { startSeasonIfNeeded(); sel.value = gameState.season.fixtures[gameState.season.round]; }
-            const cm = modeEl.value;
-            if (cm === 'cup' || cm === 'euro') {
-                const t = compState(cm);
-                if (t && t.alive && !t.done) sel.value = t.opps[t.round]; else { modeEl.value = 'friendly'; toast(`${COMP[cm].name}: ไม่มีนัดที่ลงเล่นได้ตอนนี้`); }
+            const modeEl = $('match-mode'), sel = $('ai-opponent-select');
+            if (!M) {
+                if (matchKind === 'friendly') modeEl.value = 'friendly';
+                else { const nf = nextFixture(); if (nf) { modeEl.value = nf.comp; sel.value = nf.opp; } }
             }
-            sel.disabled = league || ['cup', 'euro'].includes(modeEl.value) || !!M;
-            $('league-quota').innerText = ''; renderDay();
+            const fr = M ? !M.fix : matchKind === 'friendly';
+            sel.disabled = !fr || !!M; sel.classList.toggle('hidden', !fr); $('ai-name-label').classList.toggle('hidden', fr); $('ai-name-label').innerText = sel.value;
+            const nf = !M && !fr ? nextFixture() : null, b = $('btn-start-match');
+            if (b && !M) b.innerHTML = fr ? '<i class="fa-solid fa-play mr-2"></i> เริ่มกระชับมิตร' : nf ? `<i class="fa-solid fa-play mr-2"></i> เริ่มนัด: ${COMP_ICON[nf.comp]} vs ${esc(nf.opp)}` : '<i class="fa-solid fa-play mr-2"></i> เริ่มแข่ง';
+            renderFixtureCard(); renderDay();
             updateAIOpponentOVR();
         }
 
@@ -3244,10 +3436,27 @@
                 return { side, i, slot: sl.id, role: sl.role, gk: sl.role === 'GK', num: i + 1, name: it ? getCardObject(it).name : '', hx, hy, x: hx, y: hy, ov: null };
             });
         }
+        function colDist(a, b) { const p = h => { const v = parseInt(h.slice(1), 16); return [v >> 16, (v >> 8) & 255, v & 255]; }, x = p(a), y = p(b); return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]); }
+        function teamColors() {
+            const cr = gameState.crest || {}, my = bLum(cr.c1 || '#1D4ED8') < .1 ? (cr.c2 || '#38bdf8') : (cr.c1 || '#38bdf8');
+            const k = M && CLUB_KIT[M.aiName]; let ai = k ? k[1] : '#f87171';
+            if (colDist(my, ai) < 140) ai = k && colDist(my, k[2]) >= 140 ? k[2] : colDist(my, '#f87171') >= 140 ? '#f87171' : '#e5e7eb';
+            const tx = c => bLum(c) > .55 ? '#0f172a' : '#ffffff';
+            return { my, ai, myGk: colDist(my, '#fde047') < 120 ? '#a3e635' : '#fde047', aiGk: colDist(ai, '#c4b5fd') < 120 ? '#fb923c' : '#c4b5fd', myTx: tx(my), aiTx: tx(ai), myE: cr.e || '⚽', aiE: k ? k[0] : '🛡️' };
+        }
+        function nameAiPlayers(R) {
+            if (!M) return;
+            const used = new Set();
+            starsOf(M.aiName).forEach(p => {
+                const pl = R.ai.find(x => !x.name && x.role === p.pos && !used.has(x)) || R.ai.find(x => !x.name && !x.gk && p.pos !== 'GK' && STD_GROUP[x.role] === p.group && !used.has(x)) || (p.pos === 'GK' ? R.ai.find(x => x.gk && !x.name) : null);
+                if (pl) { pl.name = p.name; used.add(pl); }
+            });
+        }
         function radarInit(w, h) {
-            radar = { w, h, final: null, my: radarTeam('my', w, h), ai: radarTeam('ai', w, h), ball: { x: w / 2, y: h / 2, z: 0, owner: null, flight: null }, side: 'my', prog: 0.2,
+            radar = { w, h, final: null, col: teamColors(), cam: { z: 1, x: w / 2, y: h / 2 }, my: radarTeam('my', w, h), ai: radarTeam('ai', w, h), ball: { x: w / 2, y: h / 2, z: 0, owner: null, flight: null }, side: 'my', prog: 0.2,
                 queue: [], cur: null, parts: [], trail: [], banner: null, dive: null, mark: null, celebrate: null, ripple: null, nextPass: 0, last: performance.now() };
             radar.ball.owner = radar.my.find(p => p.role === 'CM' || p.role === 'CAM') || radar.my[5];
+            nameAiPlayers(radar);
         }
         const dirOf = s => s === 'my' ? 1 : -1, goalX = (R, s) => s === 'my' ? R.w - 8 : 8, other = s => s === 'my' ? 'ai' : 'my';
         const keeper = (R, s) => R[s][0];
@@ -3257,36 +3466,42 @@
             const B = R.ball, tx = pt ? pt.x : to.x + dirOf(to.side) * 6, ty = pt ? pt.y : to.y;
             B.flight = { fx: B.x, fy: B.y, tx, ty, t0: performance.now(), dur, lift: lift || 0, to }; B.owner = null;
         }
-        function animScale(R) { const sp = M ? clampN(M.speed / 800, 0.3, 1) : 1; return sp / (1 + Math.max(0, R.queue.length - 1) * 0.6); }
+        function animScale(R) { return M ? (M.highlight ? .9 : clampN(M.speed / 800, 0.35, 1)) : 1; }
         function banner(R, title, sub, color, dur) { R.banner = { title, sub, color, t0: performance.now(), dur: dur || 1600 }; }
         function kickoff(R, side) {
             ['my', 'ai'].forEach(s => R[s].forEach(p => { p.x = p.hx; p.y = p.hy; p.ov = null; }));
             R.side = side; R.prog = 0.1; R.celebrate = null;
             const B = R.ball; B.x = R.w / 2; B.y = R.h / 2; B.z = 0; B.flight = null; B.owner = pickPlayer(R, side, ['CM', 'CDM', 'CAM']);
         }
-        // turns the commentary line into a queued animation step
+        // turns a commentary line into a queued animation step; the line itself is written when the animation reaches it
         function radarEvent(text, cls) {
-            if (!M || M.instant) return;
-            if (!radar) { const c = $('match-canvas'); if (!c) return; radarInit(c.width, c.height); }
-            const R = radar, ai = M.aiName, q = a => R.queue.push(a);
+            if (!M || M.instant) return false;
+            if (!radar) { const c = $('match-canvas'); if (!c) return false; radarInit(c.width, c.height); }
+            const R = radar, ai = M.aiName, line = { text, cls }, q = a => { R.queue.push(a); if (!radarAnimFrame) drawRadarCanvas(); return true; };
+            const sideOf = t => t.includes(ai) ? 'ai' : 'my', strip = n => (n || '').replace(` (${ai})`, '').trim();
             let m;
-            if (text.includes('GOAL!')) { const mine = cls.includes('emerald'); m = text.match(/GOAL! (.*?)(?: \(แอสซิสต์.*?\))?(?: \((?:จุดโทษ|ฟรีคิก)\))? \(\d+-\d+\)\s*$/); q({ t: 'shot', side: mine ? 'my' : 'ai', res: 'goal', name: mine && m ? m[1] : null, pen: text.includes('จุดโทษ'), fk: text.includes('ฟรีคิก'), sub: mine ? (m ? shortName(m[1]) : '') : ai }); return; }
+            if (text.includes('GOAL!')) {
+                const mine = cls.includes('emerald');
+                if (mine) { m = text.match(/GOAL! (.*?)(?: \(แอสซิสต์.*?\))?(?: \((?:จุดโทษ|ฟรีคิก)\))? \(\d+-\d+\)\s*$/); return q({ t: 'shot', side: 'my', res: 'goal', name: m ? m[1] : null, pen: text.includes('จุดโทษ'), fk: text.includes('ฟรีคิก'), sub: m ? shortName(m[1]) : '', line }); }
+                m = text.match(/ — (.*?)(?: \((?:จุดโทษ|ฟรีคิก)\))? \(\d+-\d+\)/);
+                return q({ t: 'shot', side: 'ai', res: 'goal', name: m ? m[1] : null, pen: text.includes('จุดโทษ'), fk: text.includes('ฟรีคิก'), sub: m ? shortName(m[1]) : ai, line });
+            }
             if (text.includes('🧤')) {
                 const mineShot = cls.includes('orange');
                 m = text.match(/\] (.*?) ยิงตรงกรอบ/) || text.match(/(?:พลาดจุดโทษ|ฟรีคิกไม่เข้า)! (.*?) \(/);
-                q({ t: 'shot', side: mineShot ? 'my' : 'ai', res: 'save', name: mineShot && m ? m[1] : null, pen: text.includes('จุดโทษ'), fk: text.includes('ฟรีคิก') }); return;
+                return q({ t: 'shot', side: mineShot ? 'my' : 'ai', res: 'save', name: m ? strip(m[1]) : null, pen: text.includes('จุดโทษ'), fk: text.includes('ฟรีคิก'), line });
             }
-            if ((m = text.match(/\] (.*) ยิงชนเสา/))) { q({ t: 'shot', side: m[1] === ai ? 'ai' : 'my', res: 'post', name: m[1] }); return; }
-            if ((m = text.match(/\] (.*) ยิงไปเฉียดข้างเสา/))) { q({ t: 'shot', side: m[1] === ai ? 'ai' : 'my', res: 'miss', name: m[1] }); return; }
-            if ((m = text.match(/\] (.*) ครองบอลกลางสนาม/))) { q({ t: 'attack', side: 'my', name: m[1] }); return; }
-            if ((m = text.match(/แทงทะลุช่องให้ (.*)!/))) { q({ t: 'through', side: 'my', name: m[1], big: true }); return; }
-            if ((m = text.match(/จ่ายให้ (.*) ในเขตโทษ/))) { q({ t: 'through', side: 'my', name: m[1] }); return; }
-            if (text.includes(`${ai} ได้โอกาสชัดเจน`)) { q({ t: 'attack', side: 'ai' }); q({ t: 'through', side: 'ai', big: true }); return; }
-            if (text.includes(`${ai} เปิดเกมบุก`)) { q({ t: 'attack', side: 'ai' }); q({ t: 'through', side: 'ai' }); return; }
-            // instant overlays (not queued)
-            if (text.includes('🟥')) { const mine = cls.includes('red'); R.mark = { side: mine ? 'my' : 'ai', idx: 1 + Math.floor(Math.random() * 10), type: 'red', until: performance.now() + 2600 }; banner(R, '🟥 RED CARD', mine ? 'ทีมเราเหลือ 10 คน' : ai, '#ef4444'); crowdRoar(mine ? 'groan' : 'ooh'); return; }
-            if (text.includes('🚑')) { R.mark = { side: 'my', idx: 1 + Math.floor(Math.random() * 10), type: 'inj', until: performance.now() + 2600 }; banner(R, '✚ INJURY', '', '#fb923c'); crowdRoar('ooh'); return; }
-            if (text.includes('🔄')) { const fresh = radarTeam('my', R.w, R.h); R.my.forEach((p, i) => { if (fresh[i]) p.name = fresh[i].name; }); banner(R, '🔄 SUB', (text.match(/\] (?:เปลี่ยนตัว: )?(.*?) ลงแทน/) || [])[1] || '', '#38bdf8', 1300); }
+            if ((m = text.match(/\] (.*) ยิงชนเสา/))) return q({ t: 'shot', side: sideOf(m[1]), res: 'post', name: strip(m[1]), line });
+            if ((m = text.match(/\] (.*) ยิงไปเฉียดข้างเสา/))) return q({ t: 'shot', side: sideOf(m[1]), res: 'miss', name: strip(m[1]), line });
+            if ((m = text.match(/\] (.*) ครองบอลกลางสนาม/))) return q({ t: 'attack', side: 'my', name: m[1], line });
+            if ((m = text.match(/แทงทะลุช่องให้ (.*)!/))) return q({ t: 'through', side: 'my', name: m[1], big: true, line });
+            if ((m = text.match(/จ่ายให้ (.*) ในเขตโทษ/))) return q({ t: 'through', side: 'my', name: m[1], line });
+            if (text.includes(`${ai} ได้โอกาสชัดเจน`)) { q({ t: 'attack', side: 'ai', line }); return q({ t: 'through', side: 'ai', big: true }); }
+            if (text.includes(`${ai} เปิดเกมบุก`)) { q({ t: 'attack', side: 'ai', line }); return q({ t: 'through', side: 'ai' }); }
+            if (text.includes('🟥')) { const mine = cls.includes('red'); return q({ t: 'log', dur: 1100, line, fx: () => { R.mark = { side: mine ? 'my' : 'ai', idx: 1 + Math.floor(Math.random() * 10), type: 'red', until: performance.now() + 2600 }; banner(R, '🟥 RED CARD', mine ? 'ทีมเราเหลือ 10 คน' : ai, '#ef4444'); crowdRoar(mine ? 'groan' : 'ooh'); } }); }
+            if (text.includes('🚑')) return q({ t: 'log', dur: 1000, line, fx: () => { R.mark = { side: 'my', idx: 1 + Math.floor(Math.random() * 10), type: 'inj', until: performance.now() + 2600 }; banner(R, '✚ INJURY', '', '#fb923c'); crowdRoar('ooh'); } });
+            if (text.includes('🔄')) return q({ t: 'log', dur: 800, line, fx: () => { const fresh = radarTeam('my', R.w, R.h); R.my.forEach((p, i) => { if (fresh[i]) p.name = fresh[i].name; }); banner(R, '🔄 SUB', (text.match(/\] (?:เปลี่ยนตัว: )?(.*?) ลงแทน/) || [])[1] || '', '#38bdf8', 1300); } });
+            return q({ t: 'log', line });
         }
         function radarFT(d) {
             if (!radar) { const c = $('match-canvas'); if (!c) return; radarInit(c.width, c.height); }
@@ -3295,7 +3510,9 @@
         }
         function startAction(R, a) {
             const k = animScale(R), now = performance.now(), d = dirOf(a.side), gx = goalX(R, a.side), H = R.h, B = R.ball;
-            const st = [];
+            const st = [], say = () => { if (a.line) writeLog($('match-log'), a.line.text, a.line.cls); };
+            if (a.t === 'log') st.push({ dur: (a.dur || 0) * k, start: () => { say(); if (a.fx) a.fx(); } });
+            if (a.t === 'attack' || a.t === 'through') say();
             if (a.t === 'attack') {
                 st.push({ dur: 420 * k, start: () => { R.side = a.side; R.prog = Math.max(R.prog, 0.55); const c = findByName(R, a.side, a.name) || pickPlayer(R, a.side, ['CM', 'CAM', 'CDM']); passTo(R, c, 380 * k, 6); } });
             } else if (a.t === 'through') {
@@ -3328,16 +3545,16 @@
                     R.dive = { side: other(a.side), y: a.res === 'goal' && Math.random() < 0.6 ? H / 2 - (ty - H / 2) : ty, until: performance.now() + 900 * k };
                 } });
                 if (a.res === 'goal') st.push({ dur: 2200 * k, start: () => {
-                    const mine = a.side === 'my'; B.flight = null; B.x = tx; B.y = ty; B.z = 0;
+                    const mine = a.side === 'my'; B.flight = null; B.x = tx; B.y = ty; B.z = 0; say(); revealGoal(a.side);
                     R.ripple = { side: other(a.side), t0: performance.now() };
                     R.celebrate = { side: a.side, x: gx - d * 60, y: ty < H / 2 ? H * 0.15 : H * 0.85 };
                     banner(R, 'GOAL!', a.sub || '', mine ? '#facc15' : '#f87171', 2000 * k + 300);
-                    for (let i = 0; i < 60; i++) { const an = Math.random() * 6.28, v = 1.5 + Math.random() * 4; R.parts.push({ x: tx, y: ty, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 1.2, life: 1, c: ['#facc15', '#ffffff', mine ? '#38bdf8' : '#f87171'][i % 3] }); }
+                    for (let i = 0; i < 60; i++) { const an = Math.random() * 6.28, v = 1.5 + Math.random() * 4; R.parts.push({ x: tx, y: ty, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 1.2, life: 1, c: ['#facc15', '#ffffff', mine ? R.col.my : R.col.ai][i % 3] }); }
                     if (!mine) crowdRoar('groan');
                 }, end: () => kickoff(R, other(a.side)) });
-                else if (a.res === 'save') st.push({ dur: 750 * k, start: () => { const g = keeper(R, other(a.side)); banner(R, 'SAVE!', '', '#38bdf8', 900); crowdRoar('ooh'); B.flight = null; B.owner = g; g.x = tx - dirOf(g.side) * 2; g.y = ty; }, end: () => { R.side = other(a.side); R.prog = 0.15; } });
-                else if (a.res === 'post') st.push({ dur: 700 * k, start: () => { banner(R, 'POST!', '', '#fdba74', 800); crowdRoar('ooh'); const dfd = pickPlayer(R, other(a.side), ['CB', 'LB', 'RB', 'CDM']); passTo(R, dfd, 520 * k, 8); }, end: () => { R.side = other(a.side); R.prog = 0.2; } });
-                else st.push({ dur: 600 * k, start: () => { B.z = 0; }, end: () => { const g = keeper(R, other(a.side)); B.flight = null; B.owner = g; B.x = g.x; B.y = g.y; R.side = other(a.side); R.prog = 0.1; } });
+                else if (a.res === 'save') st.push({ dur: 750 * k, start: () => { say(); const g = keeper(R, other(a.side)); banner(R, 'SAVE!', '', '#38bdf8', 900); crowdRoar('ooh'); B.flight = null; B.owner = g; g.x = tx - dirOf(g.side) * 2; g.y = ty; }, end: () => { R.side = other(a.side); R.prog = 0.15; } });
+                else if (a.res === 'post') st.push({ dur: 700 * k, start: () => { say(); banner(R, 'POST!', '', '#fdba74', 800); crowdRoar('ooh'); const dfd = pickPlayer(R, other(a.side), ['CB', 'LB', 'RB', 'CDM']); passTo(R, dfd, 520 * k, 8); }, end: () => { R.side = other(a.side); R.prog = 0.2; } });
+                else st.push({ dur: 600 * k, start: () => { say(); B.z = 0; }, end: () => { const g = keeper(R, other(a.side)); B.flight = null; B.owner = g; B.x = g.x; B.y = g.y; R.side = other(a.side); R.prog = 0.1; } });
             }
             if (a.t === 'ft') st.push({ dur: 3400, start: () => {
                 const res = a.won ? 'ชนะ!' : a.draw ? 'เสมอ' : 'แพ้', col = a.won ? '#34d399' : a.draw ? '#e2e8f0' : '#f87171';
@@ -3348,7 +3565,8 @@
                 banner(R, 'FULL TIME', `${a.my} - ${a.ai} · ${res}${a.pens || ''}`, col, 3300);
                 if (a.won) for (let i = 0; i < 90; i++) { const an = Math.random() * 6.28, v = 1 + Math.random() * 4.5; R.parts.push({ x: R.w / 2, y: R.h / 2, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 1.5, life: 1, c: ['#facc15', '#ffffff', '#38bdf8', '#34d399'][i % 4] }); }
             } });
-            R.cur = { st, i: 0, t0: now }; if (st[0] && st[0].start) st[0].start();
+            if (!st.length) { say(); return; }
+            R.cur = { st, i: 0, t0: now, a }; if (st[0] && st[0].start) st[0].start();
         }
         function stepAction(R, now) {
             const c = R.cur; if (!c) return;
@@ -3446,21 +3664,26 @@
             stepAction(R, now);
             if (!R.cur && !R.queue.length && M) idleFlow(R, now);
             movePlayers(R, dt); moveBall(R, now);
+            const B = R.ball, C = R.col;
             ctx.save();
             const shake = R.banner && R.banner.title === 'GOAL!' && now - R.banner.t0 < 350;
             if (shake) ctx.translate(rnd(-3, 3), rnd(-3, 3));
+            // broadcast camera: eases in on the ball during attacks and shots
+            const act = R.cur && R.cur.a, wantZ = M && act && (act.t === 'through' || act.t === 'shot') && !R.celebrate ? 1.28 : 1, ease = Math.min(1, dt * 2.6);
+            R.cam.z += (wantZ - R.cam.z) * ease; R.cam.x += ((wantZ > 1 ? B.x : w / 2) - R.cam.x) * ease; R.cam.y += ((wantZ > 1 ? B.y : h / 2) - R.cam.y) * ease;
+            const z = R.cam.z, vx = clampN(R.cam.x, w / (2 * z), w - w / (2 * z)), vy = clampN(R.cam.y, h / (2 * z), h - h / (2 * z));
+            ctx.save(); ctx.translate(w / 2, h / 2); ctx.scale(z, z); ctx.translate(-vx, -vy);
             drawPitch(ctx, R);
-            const B = R.ball;
             // pass line preview + ball trail
             if (B.flight && B.flight.to) { ctx.setLineDash([3, 4]); ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(B.flight.fx, B.flight.fy); ctx.lineTo(B.flight.to.x, B.flight.to.y); ctx.stroke(); ctx.setLineDash([]); }
             R.trail.forEach((q, i) => { ctx.fillStyle = `rgba(250,204,21,${i / 40})`; ctx.beginPath(); ctx.arc(q.x, q.y, 1 + i / 5, 0, 6.3); ctx.fill(); });
             // players: shadow, shirt, number; ball carrier gets a ring + name
             ['ai', 'my'].forEach(s => R[s].forEach(p => {
                 ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(p.x, p.y + 6 * S, 6 * S, 2.2 * S, 0, 0, 6.3); ctx.fill();
-                ctx.fillStyle = p.gk ? (s === 'my' ? PCOL.myGk : PCOL.aiGk) : PCOL[s];
+                ctx.fillStyle = p.gk ? (s === 'my' ? C.myGk : C.aiGk) : C[s];
                 ctx.beginPath(); ctx.arc(p.x, p.y, 6.5 * S, 0, 6.3); ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1; ctx.stroke();
-                ctx.fillStyle = '#0f172a'; ctx.font = `700 ${Math.round(7 * S)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(p.num, p.x, p.y + 0.5);
+                ctx.strokeStyle = s === 'my' ? 'rgba(255,255,255,0.9)' : 'rgba(15,23,42,0.75)'; ctx.lineWidth = 1.2; ctx.stroke();
+                ctx.fillStyle = p.gk ? '#0f172a' : C[s + 'Tx']; ctx.font = `700 ${Math.round(7 * S)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(p.num, p.x, p.y + 0.5);
                 if (B.owner === p) {
                     ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(p.x, p.y, 10 * S + Math.sin(now / 150), 0, 6.3); ctx.stroke();
                     if (p.name) { ctx.font = `700 ${Math.round(9 * S)}px sans-serif`; ctx.textBaseline = 'bottom'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,0.7)'; ctx.strokeText(shortName(p.name), p.x, p.y - 11 * S); ctx.fillStyle = '#fff'; ctx.fillText(shortName(p.name), p.x, p.y - 11 * S); }
@@ -3475,14 +3698,19 @@
             R.parts = R.parts.filter(q => q.life > 0);
             R.parts.forEach(q => { q.x += q.vx; q.y += q.vy; q.vy += 0.07; q.life -= 0.011; ctx.globalAlpha = Math.max(0, q.life); ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, 3, 3); });
             ctx.globalAlpha = 1;
-            // HUD: score + minute + possession
+            ctx.restore();   // end of camera space
+            // HUD: crests, score shown so far, minute, possession
             if (M) {
-                ctx.fillStyle = 'rgba(2,6,23,0.75)'; ctx.fillRect(w / 2 - 70 * S, 12, 140 * S, 18 * S);
+                const hw = 82 * S, hy = 10, hh = 20 * S;
+                ctx.fillStyle = 'rgba(2,6,23,0.82)'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(w / 2 - hw, hy, hw * 2, hh, 6) : ctx.rect(w / 2 - hw, hy, hw * 2, hh); ctx.fill();
+                ctx.fillStyle = C.my; ctx.fillRect(w / 2 - hw, hy, 4, hh); ctx.fillStyle = C.ai; ctx.fillRect(w / 2 + hw - 4, hy, 4, hh);
                 ctx.font = `700 ${Math.round(11 * S)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillStyle = PCOL.my; ctx.fillText('MY', w / 2 - 50 * S, 12 + 9 * S); ctx.fillStyle = PCOL.ai; ctx.fillText('AI', w / 2 + 50 * S, 12 + 9 * S);
-                ctx.fillStyle = '#fff'; ctx.fillText(`${M.my} - ${M.ai}  ${M.minute}'`, w / 2, 12 + 9 * S);
+                ctx.fillText(C.myE, w / 2 - hw + 16 * S, hy + hh / 2 + 1); ctx.fillText(C.aiE, w / 2 + hw - 16 * S, hy + hh / 2 + 1);
+                ctx.fillStyle = '#fff'; ctx.fillText(`${M.shown.my} - ${M.shown.ai}`, w / 2 - 12 * S, hy + hh / 2 + 1);
+                ctx.fillStyle = '#facc15'; ctx.font = `700 ${Math.round(9 * S)}px sans-serif`; ctx.fillText(`${M.minute}'`, w / 2 + 28 * S, hy + hh / 2 + 1);
+                if (M.order && M.order !== 'normal') { ctx.font = `700 ${Math.round(9 * S)}px sans-serif`; ctx.fillStyle = '#fde68a'; ctx.textAlign = 'left'; ctx.fillText(`${ORDERS[M.order].icon} ${ORDERS[M.order].n}`, 16, hy + hh / 2 + 1); ctx.textAlign = 'center'; }
                 const ps = Math.round((radarState.poss || 0.5) * 100);
-                ctx.fillStyle = 'rgba(2,6,23,0.6)'; ctx.fillRect(w / 2 - 60, h - 20, 120, 6); ctx.fillStyle = PCOL.my; ctx.fillRect(w / 2 - 60, h - 20, 120 * ps / 100, 6); ctx.fillStyle = PCOL.ai; ctx.fillRect(w / 2 - 60 + 120 * ps / 100, h - 20, 120 * (1 - ps / 100), 6);
+                ctx.fillStyle = 'rgba(2,6,23,0.6)'; ctx.fillRect(w / 2 - 60, h - 20, 120, 6); ctx.fillStyle = C.my; ctx.fillRect(w / 2 - 60, h - 20, 120 * ps / 100, 6); ctx.fillStyle = C.ai; ctx.fillRect(w / 2 - 60 + 120 * ps / 100, h - 20, 120 * (1 - ps / 100), 6);
                 ctx.font = '600 8px sans-serif'; ctx.fillStyle = '#e2e8f0'; ctx.fillText(`ครองบอล ${ps}% - ${100 - ps}%`, w / 2, h - 27);
             }
             if (!M && R.final && !R.cur) {   // after the whistle: dimmed pitch with the final score
@@ -3550,9 +3778,9 @@
         function rollDiscipline(log) {
             const slots = getActiveSlots().filter(sl => gameState.squad[sl.id] && !M.down[sl.id]);
             const itemOf = sl => gameState.inventory.find(i => i.instanceId === gameState.squad[sl.id]);
-            if (slots.length > 8 && Math.random() < 0.010) {
+            if (slots.length > 8 && Math.random() < 0.010 * ((ORDERS[M.order] || {}).card || 1) * (M.order === 'press' ? 1.3 : 1)) {
                 const sl = pickWeighted(slots, x => ({ DF: 3, MF: 2, FW: 1 }[STD_GROUP[x.role]] || 1)), it = itemOf(sl);
-                M.down[sl.id] = 'red'; M.newRed.push(it.instanceId); addMom('my', -30);
+                M.down[sl.id] = 'red'; M.newRed.push(it.instanceId); addMom('my', -30); M.rt[it.instanceId] = (M.rt[it.instanceId] || 0) - 2;
                 logMatchEvent(log, `🟥 [${M.minute}'] ใบแดง! ${getCardObject(it).name} โดนไล่ออก — เหลือ ${11 - Object.keys(M.down).length} คน (เปลี่ยนตัวแทนไม่ได้)`, 'text-red-400'); playSound('fail');
             }
             if (Math.random() < 0.008) {
@@ -3589,32 +3817,34 @@
         function startMatchSimulation() {
             if (M) return;
             if (!Object.keys(gameState.squad).length) { toast(gameState.starterPack === 'pending' ? '🎁 เปิด Starter Pack ในร้านแพ็กก่อนลงแข่ง' : 'ยังไม่มีนักเตะในตัวจริง'); return switchTab(gameState.starterPack === 'pending' ? 'packs' : 'squad'); }
-            playSound('click');
+            playSound('click'); closeResult();
             const btn = $('btn-start-match'), log = $('match-log'), status = $('match-status'), modeEl = $('match-mode');
             syncMatchMode();
-            const league = modeEl.value === 'league';
-            const mode = modeEl.value;
-            const aiName = $('ai-opponent-select').value;
-
-            let speed = 800;
-            for (let radio of document.getElementsByName('matchSpeed')) { if (radio.checked) { speed = parseInt(radio.value); break; } }
-
+            const fix = matchKind === 'friendly' ? null : nextFixture();
+            if (matchKind !== 'friendly' && !fix) return toast('ไม่มีนัดในโปรแกรม');
+            const mode = fix ? fix.comp : 'friendly', league = mode === 'league';
+            const aiName = fix ? fix.opp : $('ai-opponent-select').value;
+            let speed = 800, sv = '800';
+            for (let radio of document.getElementsByName('matchSpeed')) { if (radio.checked) { sv = radio.value; break; } }
+            const highlight = sv === 'hl'; speed = highlight ? 60 : parseInt(sv) || 800;
             const pre = replaceUnavailable();
             if (Object.keys(gameState.squad).length < 11) toast('⚠️ ทีมยังลงไม่ครบ 11 คน (ช่องว่างจะนับเป็น OVR 40)');
-            M = { minute: 0, my: 0, ai: 0, orig: pre, start: new Set(Object.values(gameState.squad)), played: new Set(Object.values(gameState.squad)), subs: 0, aiName, aiStyle: AI_STYLE[aiName] || 'control', league, mode, mom: 0, momLoss: 0, ko: mode === 'cup' || mode === 'euro', final: false, down: {}, pendingInj: [], newInj: [], newRed: [], aiReds: 0, boost: mode === 'euro' ? 2 : 0, instant: speed === 30, speed, timer: null, pauseSlot: null };
-            btn.disabled = true;
+            M = { minute: 0, my: 0, ai: 0, shown: { my: 0, ai: 0 }, orig: pre, start: new Set(Object.values(gameState.squad)), played: new Set(Object.values(gameState.squad)), subs: 0, aiName, aiStyle: AI_STYLE[aiName] || 'control', league, mode, fix, home: fix ? fix.home : null, mom: 0, momLoss: 0, ko: mode === 'cup' || mode === 'euro', final: false, down: {}, pendingInj: [], newInj: [], newRed: [], aiReds: 0, boost: mode === 'euro' ? 2 : 0, instant: speed === 30, highlight, speed, timer: null, pauseSlot: null,
+                order: 'normal', drainSum: 0, drainN: 0, rt: {}, gl: {}, as: {}, st: { my: { sh: 0, ont: 0, xg: 0 }, ai: { sh: 0, ont: 0, xg: 0 } }, possSum: 0, possN: 0, stepDone: false, talked: null, talkFx: 0 };
+            if (M.home === false) M.mom = -6; else if (M.home === true) M.mom = 6;
+            btn.disabled = true; document.body.classList.toggle('match-live', !M.instant);
             log.innerHTML = '';
-            status.innerText = 'กำลังแข่งขัน...';
+            status.innerText = M.highlight ? 'ไฮไลต์...' : 'กำลังแข่งขัน...';
             $('score-my').innerText = 0; $('score-ai').innerText = 0;
-            logMatchEvent(log, `📋 ${myName()} (${STYLES[gameState.style].icon} ${STYLES[gameState.style].n}) พบ ${aiName} (${STYLES[M.aiStyle].icon} ${STYLES[M.aiStyle].n}) — ${league ? 'ลีก' : 'กระชับมิตร'}`, 'text-gray-400');
-            renderStyleUI(); updateAIOpponentOVR();
+            writeLog(log, `📋 ${myName()} (${STYLES[gameState.style].icon} ${STYLES[gameState.style].n}) พบ ${aiName} (${STYLES[M.aiStyle].icon} ${STYLES[M.aiStyle].n}) — ${fix ? COMP_ICON[mode] + ' ' + compLabel(fix) + ' · ' + haTxt(fix.home) : '🤝 กระชับมิตร'}`, 'text-gray-400');
+            renderStyleUI(); syncMatchMode(); renderOrders();
             radar = null; if (!radarAnimFrame) drawRadarCanvas();
-
-            if (M.ko) { const tt = compState(mode); M.final = !!tt && tt.round === COMP[mode].rounds.length - 1; }
+            if (!M.instant && window.innerWidth < 768) setTimeout(() => $('match-canvas').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+            if (M.ko) M.final = fix.r === COMP[mode].rounds.length - 1;
             updateMomBar();
             M.autoInj = M.instant || gameState.pauseMode === 'none'; M.autoTired = M.autoInj || gameState.pauseMode === 'inj';
             if (!M.instant) { crowdAmbient(true); whistle(1); }
-            if (M.instant) { while (M.minute < 90) doStep(); finishMatch(); }
+            if (M.instant) { while (M.minute < 90) { doStep(); if (M.minute === 45) teamTalk('fire'); } finishMatch(); }
             else M.timer = setInterval(matchTick, speed);
         }
 
@@ -3631,10 +3861,19 @@
             const better = getActiveSlots().some(sl => { if (M.down[sl.id]) return false; const it = gameState.inventory.find(i => i.instanceId === gameState.squad[sl.id]); if (!it || (it.energy ?? 100) >= 60) return false; const b = benchFor(sl)[0]; return b && b.currentOvr > getCardObject(it, sl.role).currentOvr; });
             return M.subs < 3 && better;
         }
+        const animBusy = () => !!radar && (!!radar.cur || radar.queue.length > 0);
         function matchTick() {
-            doStep();
-            if (M.minute >= 90) { clearInterval(M.timer); finishMatch(); return; }
-            if (pauseWanted()) { clearInterval(M.timer); M.timer = null; openPauseModal(); } else M.pendingInj = [];
+            if (!M || M.timer === null || animBusy()) return;
+            if (M.stepDone) {
+                M.stepDone = false;
+                if (M.minute >= 90) { clearInterval(M.timer); M.timer = null; finishMatch(); return; }
+                if (M.minute === 45 && !M.talked) {
+                    if (gameState.pauseMode === 'none') teamTalk('fire');
+                    else { clearInterval(M.timer); M.timer = null; M.ht = true; openPauseModal(); return; }
+                }
+                if (pauseWanted()) { clearInterval(M.timer); M.timer = null; openPauseModal(); return; } else M.pendingInj = [];
+            }
+            doStep(); M.stepDone = true;
         }
 
         function shootout() {
@@ -3660,15 +3899,19 @@
             if (!kind) return null;
             const log = $('match-log'), pen = kind === 'pen', tag = pen ? '(จุดโทษ)' : '(ฟรีคิก)';
             const conv = (sho, gk) => pen ? clampN(0.78 + (sho - gk) * 0.007, 0.5, 0.95) : clampN(0.10 + (sho - gk) * 0.004, 0.03, 0.25);
+            const SS = M.st[mine ? 'my' : 'ai']; SS.sh++; SS.ont++;
             if (mine) {
                 const real = my.by.FW.concat(my.by.MF, my.by.DF).filter(c => !c.blank); if (!real.length) return null;
                 const t = pen ? real.slice().sort((a, b) => b.stats.SHO - a.stats.SHO)[0] : pickWeighted(real, c => Math.pow(c.stats.SHO * 0.6 + c.stats.PAS * 0.4, 3) * (1 + 5 * (traitFx(c).fk || 0)));
-                if (Math.random() < conv(t.stats.SHO, ai.g) * (1 + (pen ? (traitFx(t).pen || 0) : (traitFx(t).fk || 0)))) return { mine: true, scorer: t, assister: null, kind: tag };
+                const pc = conv(t.stats.SHO, ai.g) * (1 + (pen ? (traitFx(t).pen || 0) : (traitFx(t).fk || 0))); SS.xg += pc;
+                if (Math.random() < pc) return { mine: true, scorer: t, assister: null, kind: tag };
+                if (pen) rate(t, -.4);
                 logMatchEvent(log, `🧤 [${M.minute}'] ${pen ? 'พลาดจุดโทษ' : 'ฟรีคิกไม่เข้า'}! ${t.name} (SHO ${t.stats.SHO}) — ผู้รักษาประตูคู่แข่ง ${Math.round(ai.g)}`, 'text-orange-300');
                 return { miss: true };
             }
-            if (Math.random() < conv(ai.a + 4, my.g) * (1 - (pen ? (sideFx(my, ctxNow(), false).penSave || 0) : 0))) return { mine: false, kind: tag };
-            M.saves = (M.saves || 0) + 1;
+            const pa = conv(ai.a + 4, my.g) * (1 - (pen ? (sideFx(my, ctxNow(), false).penSave || 0) : 0)); SS.xg += pa;
+            if (Math.random() < pa) return { mine: false, kind: tag, aiScorer: aiScorer(M.aiName) };
+            M.saves = (M.saves || 0) + 1; rate(my.by.GK, pen ? .8 : .3);
             logMatchEvent(log, `🧤 [${M.minute}'] ${my.by.GK.name} (${Math.round(my.g)}) เซฟ${pen ? 'จุดโทษ' : 'ฟรีคิก'}ของ ${M.aiName} ได้!`, 'text-emerald-300');
             return { miss: true };
         }
@@ -3677,6 +3920,7 @@
             const log = $('match-log');
             M.minute += 5;
             $('match-timer').innerText = `เวลา: ${M.minute}'`;
+            const ord = ORDERS[M.order] || ORDERS.normal; M.drainSum += ord.drain || 1; M.drainN++;
             rollDiscipline(log);
             if (M.autoInj && M.pendingInj.length) { M.pendingInj.forEach(id => injurySub(id, log)); M.pendingInj = []; }
             if (M.minute === 60) {
@@ -3689,31 +3933,36 @@
             radarState.targetX = Math.floor(Math.random() * 450) + 50;
             radarState.targetY = Math.floor(Math.random() * 140) + 20;
             const my = myTeam(), ai = aiTeam(M.aiName, M.aiStyle);
-            radarState.poss = my.m / (my.m + ai.m);
+            if (M.home === true) LANES.forEach(k => { my.q[k] *= 1 + HOME_ADV; my[k] *= 1 + HOME_ADV; });
+            else if (M.home === false) LANES.forEach(k => { ai.q[k] *= 1 + HOME_ADV; ai[k] *= 1 + HOME_ADV; });
+            radarState.poss = clampN(my.m * (1 + ((ord.fx || {}).poss || 0)) / (my.m * (1 + ((ord.fx || {}).poss || 0)) + ai.m), .2, .8); M.possSum += radarState.poss; M.possN++;
             M.momLoss = sideFx(my, ctxNow(), M.my < M.ai).momLoss || 0; decayMom(); updateMomBar();
             const ap = 1 - 0.05 * M.aiReds; ['a', 'm', 'd', 'g'].forEach(k => { ai[k] *= ap; });
             applyMatchup(my, ai, gameState.style, M.aiStyle);
+            if (ord.skip && Math.random() < ord.skip) { addMom('ai', 3); if (Math.random() < .35) logMatchEvent(log, `⏳ [${M.minute}'] ถ่วงเวลา... แฟนบอลเจ้าบ้านโห่ไม่พอใจ`, 'text-gray-500'); return; }
             let ev = setPiece(my, ai);
             if (ev && ev.miss) return;
             if (!ev) ev = matchStep(my, ai);
             if (!ev) return;
             if (ev.mine) {
                 M.my++;
-                $('score-my').innerText = M.my; popScore('score-my'); goalMomentum(true); updateMomBar();
+                if (M.instant) $('score-my').innerText = M.my;
+                goalMomentum(true); updateMomBar();
                 let who = myName();
                 if (ev.scorer) {
                     who = ev.scorer.name + (ev.assister ? ` (แอสซิสต์ ${ev.assister.name})` : '');
-                    const si = gameState.inventory.find(i => i.instanceId === ev.scorer.instanceId); if (si) { si.goals = (si.goals || 0) + 1; if (M.mode !== 'friendly') si.sg = (si.sg || 0) + 1; gainXp(si, 15); }
-                    const ai2 = ev.assister && gameState.inventory.find(i => i.instanceId === ev.assister.instanceId); if (ai2) { ai2.assists = (ai2.assists || 0) + 1; if (M.mode !== 'friendly') ai2.sa = (ai2.sa || 0) + 1; gainXp(ai2, 8); }
+                    const si = gameState.inventory.find(i => i.instanceId === ev.scorer.instanceId); if (si) { si.goals = (si.goals || 0) + 1; if (M.mode !== 'friendly') si.sg = (si.sg || 0) + 1; gainXp(si, 15); M.gl[si.instanceId] = (M.gl[si.instanceId] || 0) + 1; rate(ev.scorer, 1.1); }
+                    const ai2 = ev.assister && gameState.inventory.find(i => i.instanceId === ev.assister.instanceId); if (ai2) { ai2.assists = (ai2.assists || 0) + 1; if (M.mode !== 'friendly') ai2.sa = (ai2.sa || 0) + 1; gainXp(ai2, 8); M.as[ai2.instanceId] = (M.as[ai2.instanceId] || 0) + 1; rate(ev.assister, .7); }
                 }
                 logMatchEvent(log, `⚽ [${M.minute}'] GOAL! ${who}${ev.kind ? ' ' + ev.kind : ''} (${M.my}-${M.ai})`, 'text-emerald-400');
-                flashGoalEffect(); playSound('goal');
+                if (M.instant) { /* no sound / flash in instant mode */ }
                 radarState.targetX = 535; radarState.targetY = 90;
             } else {
                 M.ai++;
-                $('score-ai').innerText = M.ai; popScore('score-ai'); goalMomentum(false); updateMomBar();
-                logMatchEvent(log, `⚽ [${M.minute}'] GOAL! ${M.aiName} ได้ประตู ${ev.kind ? ev.kind + ' ' : ''}(${M.my}-${M.ai})`, 'text-red-400');
-                playSound('fail');
+                if (M.instant) $('score-ai').innerText = M.ai;
+                goalMomentum(false); updateMomBar(); rateConcede();
+                const sc = ev.aiScorer || aiScorer(M.aiName);
+                logMatchEvent(log, `⚽ [${M.minute}'] GOAL! ${M.aiName}${sc ? ' — ' + sc : ' ได้ประตู'}${ev.kind ? ' ' + ev.kind : ''} (${M.my}-${M.ai})`, 'text-red-400');
                 radarState.targetX = 15; radarState.targetY = 90;
             }
         }
@@ -3722,7 +3971,9 @@
         function openPauseModal() { M.pauseSlot = M.pendingInj[0] || null; renderPause(); $('modal-pause').classList.remove('hidden'); }
         function renderPause() {
             const my = myTeam(), r = Math.round;
-            $('pause-title').innerText = M.pendingInj.length ? `🚑 นาที ${M.minute}' — ผู้เล่นบาดเจ็บ! ต้องเปลี่ยนตัว` : `⏸ นาที ${M.minute}' — ปรับแผน`;
+            $('pause-title').innerText = M.pendingInj.length ? `🚑 นาที ${M.minute}' — ผู้เล่นบาดเจ็บ! ต้องเปลี่ยนตัว` : M.ht ? '🕐 พักครึ่ง — ห้องแต่งตัว' : `⏸ นาที ${M.minute}' — ปรับแผน`;
+            const tk = $('pause-talk');
+            if (tk) tk.innerHTML = !M.ht ? '' : M.talked ? `<div class="text-xs bg-slate-900/80 border border-slate-700 rounded-xl p-2 mb-3 text-center">${M.talkMsg}</div>` : `<div class="text-xs text-amber-300 font-bold mb-1">🗣️ พูดกับนักเตะ (เลือก 1)</div><div class="grid grid-cols-3 gap-2 mb-3">${Object.entries(TALKS).map(([k, t]) => `<button onclick="teamTalk('${k}')" class="rounded-xl p-2 bg-slate-800 border border-slate-600 hover:border-amber-400 active:scale-95 transition"><div class="text-2xl">${t.icon}</div><div class="text-xs font-bold text-white">${t.n}</div><div class="text-[9px] text-gray-400 leading-tight">${t.hint}</div></button>`).join('')}</div>`;
             $('pause-sub').innerText = `${myName()} ${M.my} - ${M.ai} ${M.aiName} · AI ใช้ ${STYLES[M.aiStyle].icon} ${STYLES[M.aiStyle].n} · รุก ${r(my.a)} / คุมเกม ${r(my.m)} / รับ ${r(my.d)}`;
             $('pause-styles').innerHTML = Object.entries(STYLES).map(([id, st]) => {
                 const mi = matchupInfo(id, M.aiStyle);
@@ -3755,10 +4006,10 @@
             renderPause();
         }
         function resumeMatch() {
-            M.pendingInj = [];
+            M.pendingInj = []; M.ht = false;
             $('modal-pause').classList.add('hidden');
             const st = STYLES[gameState.style];
-            logMatchEvent($('match-log'), `🎯 [${M.minute}'] สไตล์: ${st.icon} ${st.n}`, 'text-gray-400');
+            writeLog($('match-log'), `🎯 [${M.minute}'] สไตล์: ${st.icon} ${st.n}`, 'text-gray-400');
             M.timer = setInterval(matchTick, M.speed);
         }
 
@@ -3768,64 +4019,88 @@
             setTimeout(() => sb.classList.remove('animate-goal'), 2000);
         }
 
-        function logMatchEvent(container, text, colorClass) {
+        function writeLog(container, text, colorClass) {
+            if (!container) return;
             const p = document.createElement('p');
-            p.className = colorClass;
+            p.className = (colorClass || '') + ' log-in';
             p.innerText = text;
             container.appendChild(p);
             container.scrollTop = container.scrollHeight;
-            radarEvent(text, colorClass || '');
+        }
+        // during a live match every line is queued with its animation, so the commentary and the score never run ahead of the pitch
+        function logMatchEvent(container, text, colorClass) {
+            if (M && !M.instant && container && container.id === 'match-log' && radarEvent(text, colorClass || '')) return;
+            writeLog(container, text, colorClass);
+        }
+        function revealGoal(side) {
+            if (!M) return;
+            M.shown[side]++; $('score-' + side).innerText = M.shown[side]; popScore('score-' + side);
+            if (side === 'my') { flashGoalEffect(); playSound('goal'); } else playSound('fail');
         }
 
         function finishMatch() {
-            crowdAmbient(false);
+            crowdAmbient(false); document.body.classList.remove('match-live');
             const { my: myScore, ai: aiScore, aiName, orig, played, league } = M;
             $('btn-start-match').disabled = false;
             $('match-status').innerText = 'จบการแข่งขัน';
+            $('score-my').innerText = myScore; $('score-ai').innerText = aiScore;
             M.endSquad = { ...gameState.squad }; gameState.squad = orig;
+            const notes = [], lvl0 = gameState.level;
 
             let won = myScore > aiScore, draw = myScore === aiScore, pens = '';
             const ko = M.mode === 'cup' || M.mode === 'euro';
-            if (ko && draw) { const w = shootout(); won = w.win; draw = false; logMatchEvent($('match-log'), '🎯 ดวลจุดโทษ: ' + w.lines.join(' · '), 'text-amber-300'); pens = ` (ดวลจุดโทษ ${w.a}-${w.b})`; }
-            let rewardEP = league ? (won ? 600000 : draw ? 250000 : 80000) : (won ? 200000 : draw ? 100000 : 40000);
+            if (ko && draw) { const w = shootout(); won = w.win; draw = false; writeLog($('match-log'), '🎯 ดวลจุดโทษ: ' + w.lines.join(' · '), 'text-amber-300'); pens = ` (จุดโทษ ${w.a}-${w.b})`; }
+            let rewardEP = league ? (won ? 600000 : draw ? 250000 : 80000) : (won ? 200000 : draw ? 100000 : 40000), rewardGold = 0;
             if (league) rewardEP = Math.round(rewardEP * rwMult());
-            const rewardEXP = league ? (won ? 120 : draw ? 60 : 30) : 0;
+            const rewardEXP = league || ko ? (won ? 120 : draw ? 60 : 30) : 0;
             if (ko) {
                 const t = compState(M.mode), c = COMP[M.mode];
                 if (won) {
-                    const gg = Math.round(c.gold[t.round] * rwMult()); rewardEP = Math.round(c.ep[t.round] * rwMult()); gameState.gold += gg;
-                    toast(`${c.icon} ผ่าน${c.rounds[t.round]}${pens}! +${gg} ทอง`);
+                    rewardGold = Math.round(c.gold[t.round] * rwMult()); rewardEP = Math.round(c.ep[t.round] * rwMult()); gameState.gold += rewardGold;
+                    notes.push(`${c.icon} ผ่าน${c.rounds[t.round]}${pens}!`);
                     t.round++;
-                    if (t.round >= c.rounds.length) { t.done = true; gameState.stats[M.mode === 'cup' ? 'cups' : 'euros']++; toast(`🏆 แชมป์${c.name}!!`); }
-                } else { rewardEP = 100000; t.alive = false; toast(`${c.icon} ตกรอบ${c.name}${pens} — รอฤดูกาลหน้า`); }
+                    if (t.round >= c.rounds.length) { t.done = true; gameState.stats[M.mode === 'cup' ? 'cups' : 'euros']++; notes.push(`🏆 แชมป์${c.name}!!`); }
+                } else { rewardEP = 100000; t.alive = false; notes.push(`${c.icon} ตกรอบ${c.name}${pens}`); }
             }
-            toast(`${won ? '🎉 ชัยชนะ!' : draw ? '🤝 เสมอกัน!' : '❌ พ่ายแพ้!'} ${league ? '' : '(กระชับมิตร) '}ได้รับ ${rewardEP.toLocaleString()} EP` + (rewardEXP ? ` และ ${rewardEXP} EXP` : ''));
 
-            // unnatural-position practice: POS_TRAIN_MATCHES matches -> learned
+            // unnatural-position practice -> Position Mastery
             getActiveSlots().forEach(slot => {
                 const card = gameState.inventory.find(i => i.instanceId === gameState.squad[slot.id]);
                 if (!card) return;
                 if (!card.outOfPosMatches) card.outOfPosMatches = {};
                 if (!card.learnedPos) card.learnedPos = [getCardObject(card).pos];
                 const nat = tplOfItem(card).naturalPos || [];
-                if (!nat.includes(slot.role)) {   // any non-natural slot builds Position Mastery (Lv1 at 10 matches ... Lv5 at 100)
+                if (!nat.includes(slot.role)) {
                     const learned = card.learnedPos.includes(slot.role), before = learned ? masteryLv(card, slot.role) : 0;
                     card.outOfPosMatches[slot.role] = Math.min(MASTERY_AT[MASTERY_AT.length - 1], (card.outOfPosMatches[slot.role] || 0) + 1);
                     const nm = getCardObject(card).name;
-                    if (!learned) { if (card.outOfPosMatches[slot.role] >= POS_TRAIN_MATCHES) { card.learnedPos.push(slot.role); toast(`🎓 ${nm} ชำนาญตำแหน่ง [${slot.role}] แล้ว! (Mastery Lv1)`); } }
-                    else { const lv = masteryLv(card, slot.role); if (lv > before) toast(`📈 ${nm} Mastery [${slot.role}] Lv${lv} — Trait ทำงาน ${Math.round(getCardObject(card, slot.role).traitEff * 100)}%`); }
+                    if (!learned) { if (card.outOfPosMatches[slot.role] >= POS_TRAIN_MATCHES) { card.learnedPos.push(slot.role); notes.push(`🎓 ${nm} ชำนาญตำแหน่ง [${slot.role}] (Mastery Lv1)`); } }
+                    else { const lv = masteryLv(card, slot.role); if (lv > before) notes.push(`📈 ${nm} Mastery [${slot.role}] Lv${lv} — Trait ${Math.round(getCardObject(card, slot.role).traitEff * 100)}%`); }
                 }
             });
 
-            // match fatigue: starters ~24 (GK 10), subs ~10, reduced by stamina traits; then the rest days pass and everyone recovers per day
-            const starters = M.start;
+            // fatigue: starters ~24 (GK 10), subs ~10; stamina traits and the in-match orders change it
+            const starters = M.start, dMul = M.drainN ? M.drainSum / M.drainN : 1;
             gameState.inventory.forEach(i => {
                 if (!played.has(i.instanceId)) return;
                 const e = i.energy ?? 100, stam = 1 - (((tplOfItem(i).trait || {}).fx || {}).stam || 0), gk = tplOfItem(i).pos === 'GK';
-                i.energy = Math.max(5, e - Math.round((starters.has(i.instanceId) ? (gk ? DRAIN.gk : DRAIN.out) : DRAIN.sub) * stam));
+                i.energy = Math.max(5, e - Math.round((starters.has(i.instanceId) ? (gk ? DRAIN.gk : DRAIN.out) : DRAIN.sub) * stam * dMul));
             });
-            const tiredNow = [...starters].map(id => gameState.inventory.find(i => i.instanceId === id)).filter(i => i && i.energy < 50).map(i => getCardObject(i).name);
-            // trait evolution stats: appearances, clean sheets (defenders + GK), saves (starting GK)
+            // player ratings (1-10), Man of the Match, and form (average of the last 5 ratings -> -2..+2 OVR)
+            const resB = won ? .4 : draw ? .1 : -.3, rts = [];
+            played.forEach(id => {
+                const it = gameState.inventory.find(x => x.instanceId === id); if (!it) return;
+                const t = tplOfItem(it), st = starters.has(id), g = t.pos === 'GK' ? 'GK' : t.group;
+                let r = (st ? 6.2 : 6.0) + resB * (st ? 1 : .6) + (M.rt[id] || 0) + (Math.random() - .5) * .5;
+                if (aiScore === 0 && st && (g === 'DF' || g === 'GK')) r += .6;
+                r = clampN(Math.round(r * 10) / 10, 3, 10);
+                it.rts = (it.rts || []).concat(r).slice(-5);
+                rts.push({ id, it, r, st, name: getCardObject(it).name, pos: t.pos, g: M.gl[id] || 0, a: M.as[id] || 0 });
+            });
+            rts.sort((a, b) => b.r - a.r || b.g - a.g);
+            const motm = rts[0] || null; if (motm) { motm.it.motm = (motm.it.motm || 0) + 1; gainXp(motm.it, 15); }
+
+            // trait evolution stats
             const startGk = [...starters].find(id => { const x = gameState.inventory.find(i => i.instanceId === id); return x && tplOfItem(x).pos === 'GK'; }), cs = aiScore === 0;
             played.forEach(id => {
                 const i = gameState.inventory.find(x => x.instanceId === id); if (!i) return;
@@ -3834,38 +4109,73 @@
                 if (id === startGk) i.sv = (i.sv || 0) + (M.saves || 0);
                 checkEvolution(i);
             });
-
             gameState.inventory.forEach(i => { if (starters.has(i.instanceId)) gainXp(i, 25); else if (played.has(i.instanceId)) gainXp(i, 12); });
             flushLevelUps();
             gameState.inventory.forEach(i => { if (i.inj > 0) i.inj--; if (i.susp > 0) i.susp--; });
-            M.newRed.forEach(id => { const i = gameState.inventory.find(x => x.instanceId === id); if (i) i.susp = 1; });
-            M.newInj.forEach(id => { const i = gameState.inventory.find(x => x.instanceId === id); if (i) i.inj = Math.max(1, 1 + Math.floor(Math.random() * 4) - Math.floor(facLv('medical') / 2) + ((i.energy ?? 100) < 30 ? 1 : 0)); });
+            M.newRed.forEach(id => { const i = gameState.inventory.find(x => x.instanceId === id); if (i) { i.susp = 1; notes.push(`🟥 ${getCardObject(i).name} โดนแบน 1 นัด`); } });
+            M.newInj.forEach(id => { const i = gameState.inventory.find(x => x.instanceId === id); if (i) { i.inj = Math.max(1, 1 + Math.floor(Math.random() * 4) - Math.floor(facLv('medical') / 2) + ((i.energy ?? 100) < 30 ? 1 : 0)); notes.push(`🚑 ${getCardObject(i).name} บาดเจ็บ ${i.inj} นัด`); } });
             gameState.form = (gameState.form || []).concat(won ? 'W' : draw ? 'D' : 'L').slice(-5);
-            const plan = restPlan(M.mode); gameState.mdays = (gameState.mdays || []).concat(gameState.day || 1).slice(-6);
-            toast(restDays(plan[0], plan[1]) + (tiredNow.length ? ` · ⚠️ เหนื่อยมาก: ${tiredNow.slice(0, 4).join(', ')} — ลองหมุนเวียนตัวสำรอง` : ''));
             radarFT({ my: myScore, ai: aiScore, won, draw, pens, aiName });
             const st = gameState.stats; if (won) st.wins++; else if (draw) st.draws++; else st.losses++; st.goals += myScore;
+            const fix = M.fix; if (fix) { fix.done = true; fix.res = `${myScore}-${aiScore}${pens ? '*' : ''}`; fix.w = won ? 'W' : draw ? 'D' : 'L'; }
+            let seasonEnded = false;
             if (league && gameState.season) {
                 track('play'); if (won) track('win');
                 const sn = gameState.season;
                 recordResult(sn, ME, aiName, myScore, aiScore);
                 simAIRound(sn, aiName);
                 sn.round++;
-                if (sn.round >= sn.fixtures.length) endSeason();
+                if (sn.round >= sn.fixtures.length) { gameState.cal = null; endSeason(); seasonEnded = true; }
             }
+            // the calendar moves on to the next match day; everyone recovers for the days in between
+            let restInfo;
+            if (!fix) restInfo = '🤝 กระชับมิตร: วันไม่ผ่าน — นักเตะไม่ได้พักฟื้น';
+            else if (seasonEnded) restInfo = '🏖️ ปิดฤดูกาล 3 สัปดาห์ — ทุกคนฟิต 100%';
+            else { const nf = nextFixture(); restInfo = nf && nf.d > gameState.day ? restDays(nf.d - gameState.day, 'พักก่อนนัดถัดไป') : '📅 ไม่มีวันพัก'; }
 
             gameState.ep += rewardEP;
             gameState.exp += rewardEXP;
-            while (gameState.exp >= gameState.level * 100) {
-                gameState.exp -= gameState.level * 100;
-                gameState.level += 1;
-                toast(`⭐ MANAGER LEVEL UP! เลเวลผู้จัดการทีมเพิ่มเป็น Lv.${gameState.level}`);
-            }
+            while (gameState.exp >= gameState.level * 100) { gameState.exp -= gameState.level * 100; gameState.level += 1; }
+            if (gameState.level > lvl0) notes.push(`⭐ Manager Level Up → Lv.${gameState.level}`);
+            const possMy = M.possN ? Math.round(M.possSum / M.possN * 100) : 50;
+            const res = { my: myScore, ai: aiScore, won, draw, pens, aiName, fix: fix ? { comp: fix.comp, r: fix.r, home: fix.home } : null, st: M.st, poss: possMy, rts, motm, rewardEP, rewardEXP, rewardGold, notes, restInfo, talk: M.talkMsg || null };
+            const instant = M.instant;
             M = null;
             marketTick();
             saveGame();
-            renderAll();
+            renderAll(); renderOrders();
+            if (instant) showMatchResult(res); else setTimeout(() => showMatchResult(res), 2600);
         }
+        function showMatchResult(r) {
+            const box = $('result-body'); if (!box) return;
+            const col = r.won ? 'text-emerald-300' : r.draw ? 'text-gray-200' : 'text-red-300', lbl = r.won ? 'ชนะ' : r.draw ? 'เสมอ' : 'แพ้';
+            const comp = r.fix ? `${COMP_ICON[r.fix.comp]} ${compLabel(r.fix)} · ${haTxt(r.fix.home)}` : '🤝 กระชับมิตร';
+            const s = r.st, statRow = (t, a, b, fmt) => { const tot = (a + b) || 1, f = fmt || (x => x); return `<div class="text-[11px]"><div class="flex justify-between"><b class="text-sky-300">${f(a)}</b><span class="text-gray-400">${t}</span><b class="text-red-300">${f(b)}</b></div><div class="flex h-1.5 rounded overflow-hidden bg-slate-800"><div class="bg-sky-400" style="width:${a / tot * 100}%"></div><div class="bg-red-400" style="width:${b / tot * 100}%"></div></div></div>`; };
+            const mo = r.motm;
+            box.innerHTML = `
+                <div class="text-center">
+                    <div class="text-[11px] text-amber-300 font-bold">${comp}</div>
+                    <div class="flex items-center justify-center gap-3 mt-2">
+                        <div class="flex-1 min-w-0 text-right"><div class="inline-block">${crestSvg(gameState.crest, 36)}</div><div class="text-xs font-bold text-white truncate">${esc(myName())}</div></div>
+                        <div class="text-4xl font-black text-white px-2 whitespace-nowrap">${r.my} - ${r.ai}</div>
+                        <div class="flex-1 min-w-0 text-left"><div class="inline-block">${clubCrest(r.aiName, 36)}</div><div class="text-xs font-bold text-white truncate">${esc(r.aiName)}</div></div>
+                    </div>
+                    <div class="text-sm font-black ${col} mt-1">${lbl}${r.pens}</div>
+                </div>
+                <div class="grid grid-cols-1 gap-1.5 mt-3 bg-slate-950/60 rounded-xl p-2.5">
+                    ${statRow('ครองบอล %', r.poss, 100 - r.poss, x => x + '%')}${statRow('ยิง', s.my.sh, s.ai.sh)}${statRow('ตรงกรอบ', s.my.ont, s.ai.ont)}${statRow('xG', s.my.xg, s.ai.xg, x => x.toFixed(2))}
+                </div>
+                ${mo ? `<div class="mt-3 flex items-center gap-3 bg-gradient-to-r from-amber-500/25 to-transparent border border-amber-400/50 rounded-xl p-2"><div class="w-14 h-16 shrink-0">${chibi(mo.it, 'w-14 h-16')}</div><div class="min-w-0 flex-1"><div class="text-[10px] text-amber-300 font-black tracking-wider">⭐ MAN OF THE MATCH</div><div class="text-white font-black truncate">${esc(mo.name)}</div><div class="text-[11px] text-gray-300">${mo.g ? `⚽×${mo.g} ` : ''}${mo.a ? `🅰️×${mo.a}` : ''}</div></div><span class="text-lg font-black px-2 py-1 rounded-lg ${rtCls(mo.r)}">${mo.r.toFixed(1)}</span></div>` : ''}
+                <div class="mt-3 text-xs font-bold text-white">คะแนนนักเตะ</div>
+                <div class="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-1">${r.rts.map(x => `<div class="flex items-center gap-2 bg-slate-900/80 rounded-lg px-2 py-1 text-[11px]"><span class="w-8 text-amber-300 font-bold">${x.pos}</span><span class="flex-1 min-w-0 truncate text-white">${esc(x.name)}${x.st ? '' : ' <span class="text-sky-300 text-[9px]">SUB</span>'}</span><span class="text-gray-300">${'⚽'.repeat(Math.min(3, x.g))}${'🅰️'.repeat(Math.min(3, x.a))}</span><span class="font-black px-1.5 rounded ${rtCls(x.r)}">${x.r.toFixed(1)}</span></div>`).join('')}</div>
+                <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]"><span class="bg-amber-500/20 border border-amber-500/40 text-amber-200 rounded-full px-2 py-0.5">+${r.rewardEP.toLocaleString()} EP</span>${r.rewardEXP ? `<span class="bg-violet-500/20 border border-violet-500/40 text-violet-200 rounded-full px-2 py-0.5">+${r.rewardEXP} EXP</span>` : ''}${r.rewardGold ? `<span class="bg-yellow-400/20 border border-yellow-400/40 text-yellow-200 rounded-full px-2 py-0.5">+${r.rewardGold} ทอง</span>` : ''}</div>
+                ${r.talk ? `<div class="mt-2 text-[11px] text-gray-300">🗣️ ${r.talk}</div>` : ''}
+                ${r.notes.length ? `<ul class="mt-2 space-y-0.5 text-[11px] text-gray-200">${r.notes.map(n => `<li>${n}</li>`).join('')}</ul>` : ''}
+                <div class="mt-2 text-[11px] text-emerald-300">${r.restInfo}</div>
+                <div class="mt-4 grid grid-cols-2 gap-2"><button onclick="closeResult()" class="bg-slate-800 border border-slate-600 text-white font-bold py-2.5 rounded-xl">ปิด</button><button onclick="closeResult();goNextMatch()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black py-2.5 rounded-xl">นัดถัดไป ▶</button></div>`;
+            $('modal-result').classList.remove('hidden');
+        }
+        function closeResult() { $('modal-result').classList.add('hidden'); }
 
         function updateMatchOVR() {
             const cards = getActiveSlots().map(sl => {
